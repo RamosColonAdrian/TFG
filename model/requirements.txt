@@ -1,0 +1,9 @@
+numpy
+opencv-python
+face_recognition
+cloudinary
+fastapi
+python-dotenv
+requests
+python-multipart
+uvicorn

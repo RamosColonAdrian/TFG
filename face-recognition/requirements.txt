@@ -1,5 +1,0 @@
-opencv-python
-numpy
-face_recognition
-cloudinary
-requests
