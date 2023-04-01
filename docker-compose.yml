@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+    volumes:
+       - ./data:/var/lib/postgresql/data
+  backend:
+    build: backend
+    ports:
+      - "8007:8007"
+    environment:
+      DATABASE_URL: postgresql://admin:admin@db:5432/postgres?schema=public
+    depends_on:
+      - db
+    entrypoint: ["sh", "entrypoint.sh"]
+  model:
+    build: model
+    ports:
+      - "8000:8000"
+    environment:
+      CLOUDINARY_API_KEY: 542267921965159
+      CLOUDINARY_SECRET: iccYXhudFA1Sm1QzFG0-YdJf_Og
