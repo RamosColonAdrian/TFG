@@ -23,6 +23,16 @@ services:
     build: model
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+      - backend
     environment:
       CLOUDINARY_API_KEY: 542267921965159
       CLOUDINARY_SECRET: iccYXhudFA1Sm1QzFG0-YdJf_Og
+  frontend:
+    build: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - model
