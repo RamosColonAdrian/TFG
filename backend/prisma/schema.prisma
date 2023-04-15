@@ -11,7 +11,56 @@ datasource db {
 }
 
 model User {
-  id    String  @id
-  email String  @unique
-  name  String?
+  id                String       @id
+  dni               String       @unique
+  name              String
+  surname           String
+  birthDate         String
+  registerDate      String
+  address           String
+  email             String       @unique
+  hashedPassword    String
+  phone             String
+  relativeName      String
+  relativePhone     String
+  role              String
+  type              String
+  picture           String
+  departmentId      String
+  UserToZone        UserToZone[]
+  UserToZoneAllowed UserToZone[] @relation("AllowedByUser")
+  Department        Department   @relation(fields: [departmentId], references: [id])
+  updatedAt         DateTime     @updatedAt
+  createdAt         DateTime     @default(now())
+}
+
+model Zone {
+  id          String       @id
+  name        String
+  location    String
+  description String
+  UserToZone  UserToZone[]
+  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime     @default(now())
+}
+
+model UserToZone {
+  id            String   @id
+  userId        String
+  zoneId        String
+  allowedBy     String
+  AllowedByUser User     @relation("AllowedByUser", fields: [allowedBy], references: [id])
+  User          User     @relation(fields: [userId], references: [id])
+  Zone          Zone     @relation(fields: [zoneId], references: [id])
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
+}
+
+model Department {
+  id          String   @id
+  name        String
+  description String
+  User        User[]
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 }
