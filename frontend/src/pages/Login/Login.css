@@ -1,0 +1,107 @@
+#contenedor {
+  background-color: white;
+  display: flex;
+  height: 500px;
+  width: 1000px;
+  max-width: 1000px;
+  box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  border: solid 0.5px #202020;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+}
+
+#izquierda {
+  width: 50%;
+  max-width: 100%;
+  height: auto;
+  background-color: #c2c2c2;
+}
+
+#izquierda img {
+  width: 100%;
+  height: 100%;
+}
+
+#derecha {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form button[type="submit"] {
+  width: 100%;
+  background-color: #008cba;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+form button[type="submit"]:hover {
+  background-color: #0077a9;
+}
+
+form button[type="submit"]:focus {
+  outline: none;
+}
+
+@media only screen and (max-width: 480px) {
+  form {
+    max-width: 100%;
+  }
+}
+
+#derecha h2 {
+  font-family: "Roboto", sans-serif;
+  font-size: 36px;
+  margin-bottom: 50px;
+}
+
+#remenber {
+  display: flex;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+#remenber input {
+  margin-right: 10px;
+}
+
+#remenber :hover {
+  cursor: pointer;
+}
+
+#remenber label {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+}
+
+#forgot_password {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+#forgot_password a {
+  color: #008cba;
+  text-decoration: none;
+}
+
+#forgot_password a:hover {
+  text-decoration: underline;
+  color: #0077a9;
+}
