@@ -4,6 +4,7 @@ import Login from "../../pages/Login/Login";
 import Register from "../../pages/Register/Register";
 import { authContext } from "../../contexts/authContext/authContext";
 import UserInfo from "../../pages/UserInfo/UserInfo";
+import VideoPlayer from "../../pages/VideoPlayer/VideoPlayer";
 
 type Props = {};
 
@@ -42,6 +43,7 @@ function Routing({ }: Props) {
                 <>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/video" element={<VideoPlayer />} />
                     <Route path="*" element={<RedirectToRegister />} />
                 </>
             }

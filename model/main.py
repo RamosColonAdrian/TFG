@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, Form
 from Model import classifyFace
 from cloudinary.uploader import upload
 import cloudinary_config
+from fastapi import File
 
 app = FastAPI()
 
@@ -16,7 +17,9 @@ async def create_upload(img: UploadFile, id: str = Form()):
     return result
 
 @app.post("/classify")
-async def classify_controller(img: UploadFile):
-    contents = img.file
+async def classify_controller(img: UploadFile = File(...)):
+    contents = await img.read()
     res = classifyFace(contents)
     return res
+    
+

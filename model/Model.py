@@ -44,7 +44,8 @@ encoded_faces = encodeFaces(decoded_images)
 print("Tiempo de ejecucion: ", time.time() - start_time_stamp, "segundos. ",len(cloudinary_resources['resources']) , " imagenes cargadas. " )
 
 def classifyFace(image):
-    numpy_img = np.fromfile(image, np.uint8)
+
+    numpy_img = np.frombuffer(image, np.uint8)
     encoded_img = cv2.imdecode(numpy_img, cv2.IMREAD_UNCHANGED)
     resized_img = cv2.resize(encoded_img, (0, 0), None, 0.25, 0.25)
     rgb_corrected_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
@@ -54,9 +55,11 @@ def classifyFace(image):
     face_encoded_numpy_array = np.array(face_encoded)
 
     for encoded_face in encoded_faces:
-        comparison = fr.compare_faces([encoded_face], face_encoded_numpy_array)
-        print(comparison)
-        if comparison[0] == True:
-            return image_names[encoded_faces.index(encoded_face)].split('/')[1]
+        try:
+            comparison = fr.compare_faces([encoded_face], face_encoded_numpy_array)
+            if comparison[0] == True:
+                return image_names[encoded_faces.index(encoded_face)].split('/')[1]
+        except:
+            return 'Desconocido'
     return 'Desconocido'
 

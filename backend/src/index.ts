@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import { PrismaClient, User } from "@prisma/client";
@@ -8,12 +8,20 @@ import prisma from "./db";
 import checkThatEmailIsNotAlreadyRegistered from "./middlewares/checkThatEmailIsNotAlreadyRegistered";
 import { sign, verify } from "jsonwebtoken";
 import "dotenv/config";
+import axios from "axios";
+import Multer from "multer";
+import FormData from "form-data";
+
 
 const app = express();
 
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+
+const multer = Multer({
+  storage: Multer.memoryStorage(),
+});
 
 // health check
 app.get("/", (req, res) => {
@@ -104,6 +112,30 @@ app.post("/login", async (req, res) => {
 
   res.status(200).json({ user: restOfUser, token });
 });
+
+app.post("/getPhoto", multer.single("img"), async (req, res) => {
+  const  img  = req.file ;
+  console.log(img);
+
+  const formData = new FormData();
+  formData.append("img", img?.buffer, { 
+    filename: img?.originalname,
+    contentType: img?.mimetype
+  });
+  
+  const { data } = await axios.post(
+    "http://localhost:8000/classify",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  res.status(200).json({ message: data });  
+});
+
+
 
 const port = process.env.PORT || 8007;
 
