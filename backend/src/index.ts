@@ -160,7 +160,12 @@ app.post("/recognizer", multer.single("img"), async (req, res) => {
 
 //TODO paginar 
 app.get("/users", async (req, res) => {
-  const users = await prisma.user.findMany();
+  const { page = 1 } = req.query;
+  const users = await prisma.user.findMany({
+    skip: (+page - 1) * 10,
+    take: 10,
+  });
+
   res.status(200).json(users);
 });
 
