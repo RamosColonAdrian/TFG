@@ -45,11 +45,8 @@ export default function AuthContextProvider({
         const token = localStorage.getItem('token');
 
         if (!token) {
-            console.log("No token found")
             return;
         }
-
-        console.log("Token found")
 
         login("", "", token);
     }, []);

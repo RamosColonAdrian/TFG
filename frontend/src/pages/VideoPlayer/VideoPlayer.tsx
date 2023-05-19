@@ -29,7 +29,6 @@ const VideoPlayer = () => {
         if (isCapturing) {
             captureInterval = setInterval(async () => {
 
-                console.log("capturing...");
                 const imageSrc = webcamRef.current?.getScreenshot();
                 if (!imageSrc) return;
 
@@ -38,7 +37,7 @@ const VideoPlayer = () => {
                 formData.append("img", imageFile);
 
                 try {
-                    const { data } = await axios.post("http://localhost:8007/getPhoto", formData, {
+                    const { data } = await axios.post("http://localhost:8007/recognizer", formData, {
                         headers: {
                             "Content-Type": "multipart/form-data",
                         },
@@ -64,7 +63,6 @@ const VideoPlayer = () => {
 
 
     useEffect(() => {
-        console.log("isCapturing", isCapturing);
         let timeOut: number;
 
         if (!isCapturing) return;
@@ -75,7 +73,6 @@ const VideoPlayer = () => {
                     res(1);
                 }, 5000);
             }) 
-            console.log("timeout");
         })();
         return () => {
             if (timeOut) clearTimeout(timeOut);

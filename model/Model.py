@@ -43,8 +43,7 @@ encoded_faces = encodeFaces(decoded_images)
 
 print("Tiempo de ejecucion: ", time.time() - start_time_stamp, "segundos. ",len(cloudinary_resources['resources']) , " imagenes cargadas. " )
 
-def classifyFace(image):
-
+def classifyFace(image): 
     numpy_img = np.frombuffer(image, np.uint8)
     encoded_img = cv2.imdecode(numpy_img, cv2.IMREAD_UNCHANGED)
     resized_img = cv2.resize(encoded_img, (0, 0), None, 0.25, 0.25)

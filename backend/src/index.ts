@@ -11,9 +11,21 @@ import "dotenv/config";
 import axios from "axios";
 import Multer from "multer";
 import FormData from "form-data";
-
+import winston from "winston";
+import { readFileSync } from "fs";
+import * as path from "path";
 
 const app = express();
+
+const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.json(),
+  defaultMeta: { service: "user-service" },
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: "logs.log" }),
+  ],
+});
 
 app.use(cors());
 app.use(morgan("dev"));
@@ -28,8 +40,7 @@ app.get("/", (req, res) => {
   res.send("ok");
 });
 
-app.post(
-  "/register",
+app.post("/register",
   checkThatEmailIsNotAlreadyRegistered,
   async (req, res) => {
     const { email, password, name, surname } = req.body as {
@@ -50,7 +61,6 @@ app.post(
         surname,
       },
     });
-
     res.sendStatus(201);
   }
 );
@@ -75,7 +85,6 @@ app.post("/login", async (req, res) => {
         return res.sendStatus(401);
       }
     } catch {
-      console.log("token is not valid");
       return res.sendStatus(401);
     }
   } else {
@@ -113,27 +122,147 @@ app.post("/login", async (req, res) => {
   res.status(200).json({ user: restOfUser, token });
 });
 
-app.post("/getPhoto", multer.single("img"), async (req, res) => {
-  const  img  = req.file ;
-  console.log(img);
+app.post("/recognizer", multer.single("img"), async (req, res) => {
+  const img = req.file;
 
   const formData = new FormData();
-  formData.append("img", img?.buffer, { 
+  formData.append("img", img?.buffer, {
     filename: img?.originalname,
-    contentType: img?.mimetype
+    contentType: img?.mimetype,
   });
-  
-  const { data } = await axios.post(
-    "http://localhost:8000/classify",
-    formData,
-    {
+
+  try {
+    const { data } = await axios.post(
+      "http://localhost:8000/classify",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    
+    //TODO: cambiar el id de la zona
+    await prisma.accessLog.create({
+      data: {
+        id: generateUuid(),
+        userId: data,
+        access: true,
+        zoneId: "467f16fe-2115-4924-8225-09b964937efb",
+      },
+    });
+    
+    res.status(200).json({ message: data });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//TODO paginar 
+app.get("/users", async (req, res) => {
+  const users = await prisma.user.findMany();
+  res.status(200).json(users);
+});
+
+app.get("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  res.status(200).json(user);
+});
+
+app.put("/users/:id", async (req, res) => {
+  const userId = req.params.id;
+  const updatedUser = req.body;
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...updatedUser,
+        updatedAt: new Date(),
+      },
+    });
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating user");
+  }
+});
+
+app.delete("/users/:id", async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+    res.json({ message: "User deleted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting user");
+  }
+});
+
+//leer registro de logs
+app.get("/logs", async (req, res) => {
+  const filePath = path.resolve(__dirname, "..", "logs.log");
+  // Abrir el archivo de logs en modo lectura
+  const fileContent = readFileSync(filePath, "utf8");
+
+  // Separar el archivo en líneas
+  const logsArray = fileContent.trim().split("\n");
+
+  // Crear un nuevo array asociativo con los datos de cada línea
+  const logsData = logsArray.map((logLine) => {
+    const logObject: { [key: string]: any } = {};
+    const logParts = logLine.trim().slice(1, -1).split(",");
+
+    logParts.forEach((logPart) => {
+      const [key, value] = logPart.split(":").map((part) => part.trim());
+      logObject[key] = value;
+    });
+
+        return logObject;
+  });
+});
+
+
+app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
+  const userId = req.params.id;
+  const img = req.file;
+
+  const formData = new FormData();
+  formData.append("img", img?.buffer, {
+    filename: img?.originalname,
+    contentType: img?.mimetype,
+  });
+
+  formData.append("id", userId);
+
+
+  try {
+    await axios.post("http://localhost:8000/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    }
-  );
-  res.status(200).json({ message: data });  
+    });
+    res.status(200).json({ message: "Photo uploaded" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error uploading photo");
+  }
 });
+
+
+
+
+
+
+
 
 
 

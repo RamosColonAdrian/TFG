@@ -32,6 +32,7 @@ model User {
   Department        Department?  @relation(fields: [departmentId], references: [id])
   updatedAt         DateTime     @updatedAt
   createdAt         DateTime     @default(now())
+  AccessLog         AccessLog[]
 }
 
 model Zone {
@@ -42,6 +43,7 @@ model Zone {
   UserToZone  UserToZone[]
   updatedAt   DateTime     @updatedAt
   createdAt   DateTime     @default(now())
+  AccessLog   AccessLog[]
 }
 
 model UserToZone {
@@ -63,4 +65,15 @@ model Department {
   User        User[]
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
+}
+
+model AccessLog {
+  id        String   @id
+  userId    String
+  zoneId    String
+  access    Boolean
+  User      User     @relation(fields: [userId], references: [id])
+  Zone      Zone     @relation(fields: [zoneId], references: [id])
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
