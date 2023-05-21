@@ -1,5 +1,4 @@
 import React from "react";
-import './Input.css';
 
 interface InputProps {
   label: string;
@@ -12,21 +11,41 @@ interface InputProps {
   width?: string; // Agregamos la prop width
 }
 
-const Input: React.FC<InputProps> = ({ label, type, name, value, onChange, error, icon, width }) => { // Renombramos la prop a 'Icon' y utilizamos la desestructuración para acceder al valor
+const Input: React.FC<InputProps> = ({
+  label,
+  type,
+  name,
+  value,
+  onChange,
+  error,
+  icon,
+  width,
+}) => {
   return (
-    <div className="input-container">
-      {icon ? icon : null}
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        className="form-control"
-        style={{ width }} // Usamos la prop width para establecer el ancho del input
-      />
-      <label htmlFor={name}>{label}</label>
-      {error && <div className="alert alert-danger">{error}</div>}
-    </div>
+      <div className="max-w-2xl mx-auto">
+        <label
+          htmlFor={name}
+          className="block mb-2 text-sm font-medium text-gray-700"
+        >
+          {label}
+        </label>
+        <div className="relative mb-6">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          {icon ? icon : null}
+          </div>
+          <input
+            id="input-group-1"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+            type={type}
+            name={name}
+            value={value}
+            onChange={onChange}
+            style={{ width }}
+          />
+        </div>
+        {error && <div className="alert alert-danger">{error}</div>}
+      </div>
+    
   );
 };
 

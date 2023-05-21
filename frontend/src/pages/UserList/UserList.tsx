@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FiInfo } from 'react-icons/fi';
-import './UserList.css';
+import { Link } from 'react-router-dom';
 
-interface User {
+
+export interface Department {
+    id: string;
+    name: string;
+    description: string;
+    updatedAt: string;
+    createdAt: string;
+}
+
+
+export interface User {
     id: string;
     dni?: string;
     name?: string;
@@ -20,117 +30,93 @@ interface User {
     type?: string;
     picture?: string;
     departmentId?: string;
+    Department?: Department;
 }
 
 const UserList: React.FC = () => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const [showPopup, setShowPopup] = useState(false);
+    const [loadedUsers, setLoadedUsers] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true);
         axios
             .get('http://localhost:8007/users')
             .then((response) => {
-                setUsers(response.data);
+                setLoadedUsers(response.data);
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                console.log(error);
+                setIsLoading(false);
+            });
+    }, []);
+
+
+    function getImg(userId: string) {
+        axios
+            .get(`http://localhost:8007/user-photo/${userId}`)
+            .then((response) => {
+                console.log(response.data);
+                return response.data;
             })
             .catch((error) => {
                 console.log(error);
             });
-    }, []);
+    }
 
-    const handleInfoClick = (userId: string) => {
-        const user = users.find((user) => user.id === userId);
-        if (user) {
-            setSelectedUser(user);
-            setShowPopup(true);
-        }
-    };
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
-    const handleModalClose = () => {
-        setShowPopup(false);
-        setSelectedUser(null);
-    };
+    console.log(getImg("f815228b-b761-47a1-a9ca-0893fa805014"));
 
     return (
-        <div className="user-list-container">
-            <h1 className="user-list-title">Lista de usuarios</h1>
-            <table className="user-list-table">
-                <thead>
+        <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
+            <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
+                <thead className="bg-gray-50">
                     <tr>
-                        <th>ID</th>
-                        <th>DNI</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Información</th>
+                        <th scope="col" className="px-6 py-4 font-medium text-gray-900">Name</th>
+                        <th scope="col" className="px-6 py-4 font-medium text-gray-900">Departament</th>
+                        <th scope="col" className="px-6 py-4 font-medium text-gray-900">Action</th>
+
                     </tr>
                 </thead>
-                <tbody>
-                    {users.map((user) => (
-                        <tr key={user.id}>
-                            <td>{user.id}</td>
-                            <td>{user.dni}</td>
-                            <td>{user.name}</td>
-                            <td>{user.surname}</td>
-                            <td>{user.email}</td>
-                            <td>{user.phone}</td>
-                            <td>
-                                <button
-                                    className="user-list-info-button"
-                                    id={`info-${user.id}`}
-                                    onClick={() => handleInfoClick(user.id)}
-                                >
-                                    <FiInfo className="user-list-info-icon" />
-                                </button>
-                            </td>
-                        </tr>
+                <tbody className="divide-y divide-gray-100 border-t border-gray-100 ">
+                    {loadedUsers.map((user) => (
+                            <tr className="hover:bg-gray-50">
+                                <th className="flex gap-3 px-6 py-4 font-normal text-gray-900">
+                                    <div className="relative h-10 w-10">
+                                        <img
+                                            className="h-full w-full rounded-full object-cover object-center"
+                                            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                            alt=""
+                                        />
+                                        <span className="absolute right-0 bottom-0 h-2 w-2 rounded-full bg-green-400 ring ring-white"></span>
+                                    </div>
+                                    <div className="text-sm">
+                                        <div className="font-medium text-gray-700">{user.name}</div>
+                                        <div className="text-gray-400">{user.email}</div>
+                                    </div>
+                                </th>
+                                <td className="px-6 py-4">
+                                    <span
+                                        className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600"
+                                    >
+                                        <span className="h-1.5 w-1.5 rounded-full bg-green-600"></span>
+                                        {user.Department?.name || "Without department"}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4 text-right text-sm font-medium">
+                                <Link to={`/user/${user.id}`} className=" text-gray-700 hover:text-indigo-900">
+                                        <FiInfo />
+                                    </Link>
+                                </td>
+                            </tr>
                     ))}
+
                 </tbody>
             </table>
-            {selectedUser && (
-                <div className="user-info-overlay">
-                    <div className="user-info-modal">
-                        <h2 className="user-info-modal-title">Información del usuario</h2>
-                        <div className="user-info-modal-row">
-                            <span className="user-info-modal-label">ID:</span>
-                            <span className="user-info-modal-value">{selectedUser.id}</span>
-                        </div>
-                        <div className="user-info-modal-row">
-                            <span className="user-info-modal-label">DNI:</span>
-                            <span className="user-info-modal-value">{selectedUser.dni}</span>
-                        </div>
-                        <div className="user-info-modal-row">
-                            <span className="user-info-modal-label">Nombre:</span>
-                            <span className="user-info-modal-value">{selectedUser.name}</span>
-                        </div>
-                        <div className="user-info-modal-row">
-                            <span className="user-info-modal-label">Email:</span>
-                            <span className="user-info-modal-value">{selectedUser.email}</span>
-                        </div>
-                        <div className="user-info-modal-row">
-                            <span className="user-info-modal-label">Apellido:</span>
-                            <span className="user-info-modal-value">{selectedUser.surname}</span>
-                        </div>
-                        <div className="user-info-modal-row">
-                            <span className="user-info-modal-label">Fecha de nacimiento:</span>
-                            <span className="user-info-modal-value">{selectedUser.birthDate}</span>
-                        </div>
-                        <div className="user-info-modal-row">
-                            <span className="user-info-modal-label">Fecha de registro:</span>
-                            <span className="user-info-modal-value">{selectedUser.registerDate}</span>
-                        </div>
-
-                        <button className="close-popup" onClick={handleModalClose}>
-                            X
-                        </button>
-                    </div>
-                </div>
-
-            )}
         </div>
-
-
     );
 };
 

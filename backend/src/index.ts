@@ -1,7 +1,7 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { hash, compare } from "bcryptjs";
 import { v4 as generateUuid } from "uuid";
 import prisma from "./db";
@@ -11,21 +11,11 @@ import "dotenv/config";
 import axios from "axios";
 import Multer from "multer";
 import FormData from "form-data";
-import winston from "winston";
-import { readFileSync } from "fs";
-import * as path from "path";
+import cloudinary from "../cloudinary_config";
 
 const app = express();
 
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.json(),
-  defaultMeta: { service: "user-service" },
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: "logs.log" }),
-  ],
-});
+
 
 app.use(cors());
 app.use(morgan("dev"));
@@ -40,7 +30,8 @@ app.get("/", (req, res) => {
   res.send("ok");
 });
 
-app.post("/register",
+app.post(
+  "/register",
   checkThatEmailIsNotAlreadyRegistered,
   async (req, res) => {
     const { email, password, name, surname } = req.body as {
@@ -141,7 +132,7 @@ app.post("/recognizer", multer.single("img"), async (req, res) => {
         },
       }
     );
-    
+
     //TODO: cambiar el id de la zona
     await prisma.accessLog.create({
       data: {
@@ -151,19 +142,21 @@ app.post("/recognizer", multer.single("img"), async (req, res) => {
         zoneId: "467f16fe-2115-4924-8225-09b964937efb",
       },
     });
-    
+
     res.status(200).json({ message: data });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-//TODO paginar 
 app.get("/users", async (req, res) => {
   const { page = 1 } = req.query;
   const users = await prisma.user.findMany({
     skip: (+page - 1) * 10,
     take: 10,
+    include: {
+      Department: true,
+    },
   });
 
   res.status(200).json(users);
@@ -174,6 +167,10 @@ app.get("/users/:id", async (req, res) => {
   const user = await prisma.user.findUnique({
     where: {
       id,
+    },
+    include: {
+      Department: true,
+      AccessLog: true,
     },
   });
   res.status(200).json(user);
@@ -212,62 +209,68 @@ app.delete("/users/:id", async (req, res) => {
   }
 });
 
-//leer registro de logs
-app.get("/logs", async (req, res) => {
-  const filePath = path.resolve(__dirname, "..", "logs.log");
-  // Abrir el archivo de logs en modo lectura
-  const fileContent = readFileSync(filePath, "utf8");
-
-  // Separar el archivo en líneas
-  const logsArray = fileContent.trim().split("\n");
-
-  // Crear un nuevo array asociativo con los datos de cada línea
-  const logsData = logsArray.map((logLine) => {
-    const logObject: { [key: string]: any } = {};
-    const logParts = logLine.trim().slice(1, -1).split(",");
-
-    logParts.forEach((logPart) => {
-      const [key, value] = logPart.split(":").map((part) => part.trim());
-      logObject[key] = value;
-    });
-
-        return logObject;
-  });
-});
-
-
 app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
   const userId = req.params.id;
   const img = req.file;
 
-  const formData = new FormData();
-  formData.append("img", img?.buffer, {
-    filename: img?.originalname,
-    contentType: img?.mimetype,
-  });
+  console.log(img);
+  console.log(userId);
 
-  formData.append("id", userId);
-
+  if (!img) {
+    return res.status(400).json({ error: "No se proporcionó ninguna imagen" });
+  }
 
   try {
-    await axios.post("http://localhost:8000/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "face_recognition",
+          public_id: userId,
+        },
+        (error, result) => {
+          if (result) {
+            resolve(result);
+          } else {
+            reject(error);
+          }
+        }
+      );
+
+      // Piping the buffer to the upload stream
+      stream.write(img.buffer);
+      stream.end();
+
     });
-    res.status(200).json({ message: "Photo uploaded" });
+
+    console.log(result);
+
+    // Aquí puedes realizar cualquier acción adicional con el resultado de la subida, como guardar la URL de la imagen en una base de datos, etc.
+
+    res.sendStatus(200);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error uploading photo");
+    res.sendStatus(500);
+  }
+});
+
+app.get("/user-photo/:id", async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const result = await cloudinary.api.resource(userId+".jpg");
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
   }
 });
 
 
+app.get("/departments", async (req, res) => {
+  const departments = await prisma.department.findMany({});
 
-
-
-
-
+  res.status(200).json(departments);
+});
 
 
 

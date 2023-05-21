@@ -1,11 +1,10 @@
 import { useState, useContext } from "react";
 import Input from "../../shared/components/Input/Input";
-import "./Login.css";
 
 import { FiKey } from "react-icons/fi";
 import { MdOutlineMailOutline } from "react-icons/md";
 
-import background from "../../assets/img_back_login.png";
+import background from "../../assets/login-new.jpeg";
 
 import { toast } from 'react-toastify';
 import { authContext } from "../../contexts/authContext/authContext";
@@ -38,51 +37,59 @@ const Login: React.FC<LoginProps> = () => {
   };
 
   return (
-    <div id="contenedor">
-      <div id="izquierda">
-        <img src={background} />
+    <div className="h-screen font-sans login bg-cover bg-no-repeat" 
+    style={{
+      backgroundImage:
+        `url(${background})`
+    }} >
+      <div className="container mx-auto h-full flex flex-1 justify-center items-center">
+        <div className="w-full max-w-lg flex flex-col items-stretch">
+            <form onSubmit={handleSubmit} className="m-4 p-10 bg-white bg-opacity-25 rounded shadow-xl">
+              <p className="text-gray-700 text-center text-xl font-bold">LOGIN</p>
+              <Input
+                label={"Email"}
+                type={"email"}
+                name={"email"}
+                value={formState.email}
+                onChange={(e) =>
+                  setFormState({ ...formState, email: e.target.value })
+                }
+                error={undefined}
+                icon={<MdOutlineMailOutline className="icon" />}
+                width={"100%"}
+              />
+              <Input
+                label={"Password"}
+                type={"password"}
+                name={"password"}
+                value={formState.password}
+                onChange={(e) =>
+                  setFormState({ ...formState, password: e.target.value })
+                }
+                error={undefined}
+                icon={<FiKey className="icon" />}
+                width={"100%"}
+              />
+
+              <div className="mt-4 items-center flex justify-between">
+                <button className="px-4 py-1 text-white font-light tracking-wider bg-gray-900 hover:bg-gray-800 rounded"
+                  type="submit">Entrar</button>
+              </div>
+            </form>
+        </div>
       </div>
 
-      <div id="derecha">
-        <h2>Iniciar sesión</h2>
-        <form onSubmit={handleSubmit}>
-          <Input
-            label={"Email"}
-            type={"email"}
-            name={"email"}
-            value={formState.email}
-            onChange={(e) =>
-              setFormState({ ...formState, email: e.target.value })
-            }
-            error={undefined}
-            icon={<MdOutlineMailOutline className="icon" />}
-            width={"100%"}
-          />
-          <Input
-            label={"Password"}
-            type={"password"}
-            name={"password"}
-            value={formState.password}
-            onChange={(e) =>
-              setFormState({ ...formState, password: e.target.value })
-            }
-            error={undefined}
-            icon={<FiKey className="icon" />}
-            width={"100%"}
-          />
-          <div id="remenber">
-            <label>
-              <input type="checkbox" name="remember" /> Recuérdame
-            </label>
-          </div>
-          <button type="submit">Login</button>
-          <div id="forgot_password">
-            <a href="#">¿Olvidaste tu contraseña?</a>
-          </div>
-        </form>
-      </div>
-      <Link to="/register">Create an account</Link>
     </div>
+
+
+
+
+
+
+
+
+
+
   );
 };
 
