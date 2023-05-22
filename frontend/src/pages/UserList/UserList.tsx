@@ -51,25 +51,13 @@ const UserList: React.FC = () => {
             });
     }, []);
 
-
-    function getImg(userId: string) {
-        axios
-            .get(`http://localhost:8007/user-photo/${userId}`)
-            .then((response) => {
-                console.log(response.data);
-                return response.data;
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    }
-
+    
+    
     if (isLoading) {
         return <div>Loading...</div>;
     }
 
-    console.log(getImg("f815228b-b761-47a1-a9ca-0893fa805014"));
-
+   
     return (
         <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
             <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
@@ -83,13 +71,14 @@ const UserList: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-100 border-t border-gray-100 ">
                     {loadedUsers.map((user) => (
+                       
                             <tr className="hover:bg-gray-50">
                                 <th className="flex gap-3 px-6 py-4 font-normal text-gray-900">
                                     <div className="relative h-10 w-10">
                                         <img
                                             className="h-full w-full rounded-full object-cover object-center"
-                                            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                            alt=""
+                                            src= {user.picture }
+                                            
                                         />
                                         <span className="absolute right-0 bottom-0 h-2 w-2 rounded-full bg-green-400 ring ring-white"></span>
                                     </div>

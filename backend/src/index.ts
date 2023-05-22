@@ -15,8 +15,6 @@ import cloudinary from "../cloudinary_config";
 
 const app = express();
 
-
-
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
@@ -41,6 +39,9 @@ app.post(
       surname: string;
     };
 
+    const picture =
+      "https://res.cloudinary.com/dqrqizfkt/image/upload/v1684671418/default/default_user.png";
+
     const hashedPassword = await hash(password, 10);
 
     await prisma.user.create({
@@ -50,6 +51,7 @@ app.post(
         hashedPassword,
         name,
         surname,
+        picture,
       },
     });
     res.sendStatus(201);
@@ -76,7 +78,9 @@ app.post("/login", async (req, res) => {
         return res.sendStatus(401);
       }
     } catch {
+      console.log("error");
       return res.sendStatus(401);
+      
     }
   } else {
     const { email, password } = req.body as {
@@ -213,15 +217,12 @@ app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
   const userId = req.params.id;
   const img = req.file;
 
-  console.log(img);
-  console.log(userId);
-
   if (!img) {
     return res.status(400).json({ error: "No se proporcionó ninguna imagen" });
   }
 
   try {
-    const result = await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
           folder: "face_recognition",
@@ -235,41 +236,90 @@ app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
           }
         }
       );
-
-      // Piping the buffer to the upload stream
+      
       stream.write(img.buffer);
       stream.end();
-
     });
 
-    console.log(result);
+    const picture = `https://res.cloudinary.com/dqrqizfkt/image/upload/v1684604332/face_recognition/${userId}.jpg`;
 
-    // Aquí puedes realizar cualquier acción adicional con el resultado de la subida, como guardar la URL de la imagen en una base de datos, etc.
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        picture,
+      },
+    });
 
-    res.sendStatus(200);
+    res.status(200).json(user);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
-
-app.get("/user-photo/:id", async (req, res) => {
-  const userId = req.params.id;
-
-  try {
-    const result = await cloudinary.api.resource(userId+".jpg");
-    res.status(200).json(result);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
-
 
 app.get("/departments", async (req, res) => {
   const departments = await prisma.department.findMany({});
 
   res.status(200).json(departments);
+});
+
+app.get("/zones", async (req, res) => {
+  const zones = await prisma.zone.findMany({});
+  res.status(200).json(zones);
+});
+
+app.post("/add-user-to-zone", async (req, res) => {
+  const { userId, zoneId } = req.body as { userId: string; zoneId: string };
+  console.log(userId, zoneId);
+  try {
+    await prisma.userToZone.create({
+      data: {
+        id: generateUuid(),
+        userId,
+        zoneId,
+        allowedBy: "1cfa6e2d-1dd5-4ac7-8ce6-572909ee2221",
+      },
+    });
+    res.sendStatus(201);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+app.get("/allowed-zones/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const allowedZones = await prisma.userToZone.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        Zone: true,
+      },
+    });
+
+    res.status(200).json(allowedZones);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+
+});
+
+app.delete("/delete-user-zone/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.userToZone.delete({
+      where: {
+        id,
+      },
+    });
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
 });
 
 
