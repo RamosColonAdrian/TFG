@@ -1,7 +1,7 @@
 import React from "react";
 import { json, useLinkClickHandler, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { User } from "../UserList/UserList";
+import { User } from "../../shared/Interfaces/Interfaces";
 import axios from "axios";
 import { TiArrowDownOutline, TiArrowUpOutline, TiTimes } from "react-icons/ti";
 
@@ -109,6 +109,7 @@ const UserDetail = (props: Props) => {
     formData.append("img", file as Blob);
     formData.append("id", userId as string);
 
+
     await axios
       .put(`http://localhost:8007/user-photo/${userId}`, formData)
       .then((response) => {
@@ -133,6 +134,33 @@ const UserDetail = (props: Props) => {
     <div className="max-w-2xl mx-auto bg-white p-16">
       <form onSubmit={handleSubmit}>
         <div className="grid gap-6 mb-6 lg:grid-cols-2 w-full">
+          <form onSubmit={handleSubmitImg}>
+            <div>
+              <label htmlFor="imageInput" className="relative cursor-pointer">
+                <img
+                  className="h-full w-full rounded-full object-cover object-center"
+                  src={user.picture}
+                  alt="Profile"
+                />
+                <input
+                  id="imageInput"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={(e) => setFile(e.target.files?.[0])}
+                />
+              </label>
+
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  className="mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                >
+                  Send Image
+                </button>
+              </div>
+            </div>
+          </form>
           <div>
             <label
               htmlFor="name"

@@ -80,7 +80,6 @@ app.post("/login", async (req, res) => {
     } catch {
       console.log("error");
       return res.sendStatus(401);
-      
     }
   } else {
     const { email, password } = req.body as {
@@ -236,7 +235,7 @@ app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
           }
         }
       );
-      
+
       stream.write(img.buffer);
       stream.end();
     });
@@ -263,15 +262,11 @@ app.get("/departments", async (req, res) => {
   res.status(200).json(departments);
 });
 
-app.get("/zones", async (req, res) => {
-  const zones = await prisma.zone.findMany({});
-  res.status(200).json(zones);
-});
-
 app.post("/add-user-to-zone", async (req, res) => {
   const { userId, zoneId } = req.body as { userId: string; zoneId: string };
   console.log(userId, zoneId);
   try {
+    //TODO: cambiar el id del usuario allowed by
     await prisma.userToZone.create({
       data: {
         id: generateUuid(),
@@ -304,7 +299,6 @@ app.get("/allowed-zones/:userId", async (req, res) => {
     console.error(error);
     res.sendStatus(500);
   }
-
 });
 
 app.delete("/delete-user-zone/:id", async (req, res) => {
@@ -322,7 +316,158 @@ app.delete("/delete-user-zone/:id", async (req, res) => {
   }
 });
 
+app.get("/zones", async (req, res) => {
+  const zones = await prisma.zone.findMany({});
+  res.status(200).json(zones);
+});
 
+app.put("/zones/:id", async (req, res) => {
+  const zoneId = req.params.id;
+  const updatedZone = req.body;
+
+  try {
+    const zone = await prisma.zone.update({
+      where: { id: zoneId },
+      data: {
+        ...updatedZone,
+        updatedAt: new Date(),
+      },
+    });
+    res.json(zone);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating zone");
+  }
+});
+
+app.get("/zonesUsers", async (req, res) => {
+  try {
+    const zones = await prisma.zone.findMany({
+      include: {
+        UserToZone: {
+          include: {
+            User: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json(zones);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las zonas con usuarios" });
+  }
+});
+
+app.get("/zones/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const zone = await prisma.zone.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        UserToZone: {
+          include: {
+            User: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json(zone);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener la zona" });
+  }
+});
+
+app.get("/users-to-zones/:zoneId", async (req, res) => {
+  const { zoneId } = req.params;
+  try {
+    const usersToZones = await prisma.userToZone.findMany({
+      where: {
+        zoneId,
+      },
+      include: {
+        User: true,
+      },
+    });
+
+    res.status(200).json(usersToZones);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+app.delete("/user-to-zone/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.userToZone.delete({
+      where: {
+        id,
+      },
+    });
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+app.post("/zone", async (req, res) => {
+  const { name, description, location } = req.body;
+  const id = generateUuid();
+  try {
+    const zone = await prisma.zone.create({
+      data: {
+        id,
+        name,
+        description,
+        location,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+    res.status(201).json(zone);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al crear la zona" });
+  }
+});
+
+app.post("/add-zone-user-to-zone", async (req, res) => {
+  const { userId, zone } = req.body;
+  const id = generateUuid();
+  const { name, description, location } = zone;
+  try {
+    await prisma.zone.create({
+      data: {
+        id,
+        name,
+        description,
+        location,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    await prisma.userToZone.create({
+      data: {
+        id: generateUuid(),
+        userId,
+        zoneId: id,
+        allowedBy: "f76111e6-2622-47b2-a706-175cfeb00d97",
+      },
+    });
+    res.sendStatus(201);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al crear la zona" });
+  }
+});
 
 const port = process.env.PORT || 8007;
 

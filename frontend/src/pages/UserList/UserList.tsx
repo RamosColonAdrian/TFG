@@ -2,36 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FiInfo } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import { User } from '../../shared/Interfaces/Interfaces';
 
-
-export interface Department {
-    id: string;
-    name: string;
-    description: string;
-    updatedAt: string;
-    createdAt: string;
-}
-
-
-export interface User {
-    id: string;
-    dni?: string;
-    name?: string;
-    surname?: string;
-    birthDate?: string;
-    registerDate?: string;
-    address?: string;
-    email: string;
-    hashedPassword: string;
-    phone?: string;
-    relativeName?: string;
-    relativePhone?: string;
-    role?: string;
-    type?: string;
-    picture?: string;
-    departmentId?: string;
-    Department?: Department;
-}
 
 const UserList: React.FC = () => {
     const [loadedUsers, setLoadedUsers] = useState<User[]>([]);
@@ -96,7 +68,7 @@ const UserList: React.FC = () => {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 text-right text-sm font-medium">
-                                <Link to={`/user/${user.id}`} className=" text-gray-700 hover:text-indigo-900">
+                                    <Link to={`/user/${user.id}`} className=" text-gray-700 hover:text-indigo-900">
                                         <FiInfo />
                                     </Link>
                                 </td>
