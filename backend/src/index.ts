@@ -272,10 +272,18 @@ app.post("/add-user-to-zone", async (req, res) => {
         id: generateUuid(),
         userId,
         zoneId,
-        allowedBy: "1cfa6e2d-1dd5-4ac7-8ce6-572909ee2221",
+        allowedBy: "14557d09-8cc1-40eb-8749-eb453f2211e8",
       },
     });
-    res.sendStatus(201);
+
+    const zone = await prisma.zone.findUnique({
+      where: {
+        id: zoneId,
+      },
+    });
+
+  
+    res.status(200).json(zone);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
@@ -285,15 +293,15 @@ app.post("/add-user-to-zone", async (req, res) => {
 app.get("/allowed-zones/:userId", async (req, res) => {
   const { userId } = req.params;
   try {
-    const allowedZones = await prisma.userToZone.findMany({
+    const allowedZones = await prisma.zone.findMany({
       where: {
-        userId,
-      },
-      include: {
-        Zone: true,
+        UserToZone: {
+          some: {
+            userId,
+          },
+        },
       },
     });
-
     res.status(200).json(allowedZones);
   } catch (error) {
     console.error(error);
@@ -301,20 +309,6 @@ app.get("/allowed-zones/:userId", async (req, res) => {
   }
 });
 
-app.delete("/delete-user-zone/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    await prisma.userToZone.delete({
-      where: {
-        id,
-      },
-    });
-    res.sendStatus(200);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
 
 app.get("/zones", async (req, res) => {
   const zones = await prisma.zone.findMany({});
@@ -402,12 +396,12 @@ app.get("/users-to-zones/:zoneId", async (req, res) => {
   }
 });
 
-app.delete("/user-to-zone/:id", async (req, res) => {
-  const { id } = req.params;
+app.delete("/user-to-zone/:zoneId", async (req, res) => {
+  const { zoneId } = req.params;
   try {
-    await prisma.userToZone.delete({
+    await prisma.userToZone.deleteMany({
       where: {
-        id,
+        zoneId,
       },
     });
     res.sendStatus(200);
@@ -439,7 +433,7 @@ app.post("/zone", async (req, res) => {
 });
 
 app.post("/add-zone-user-to-zone", async (req, res) => {
-  const { userId, zone } = req.body;
+  const { selectedUsers, zone } = req.body;
   const id = generateUuid();
   const { name, description, location } = zone;
   try {
@@ -453,21 +447,89 @@ app.post("/add-zone-user-to-zone", async (req, res) => {
         updatedAt: new Date(),
       },
     });
-
-    await prisma.userToZone.create({
-      data: {
-        id: generateUuid(),
-        userId,
-        zoneId: id,
-        allowedBy: "f76111e6-2622-47b2-a706-175cfeb00d97",
-      },
-    });
+ //todo: cambiar el id del usuario allowed by
+    for (const user of selectedUsers) {
+      await prisma.userToZone.create({
+        data: {
+          id: generateUuid(),
+          userId: user,
+          zoneId: id,
+          allowedBy: "b3cdfd1f-9eaa-4766-ad9a-68319422f73c",
+        },
+      });
+    }
     res.sendStatus(201);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al crear la zona" });
+    res.sendStatus(500);
   }
 });
+
+app.get("/departments-and-users", async (req, res) => {
+  const departments = await prisma.department.findMany({
+    include: {
+      User: true,
+    },
+  });
+  
+  res.status(200).json(departments);
+});
+
+app.post("/department", async (req, res) => {
+  const { department, selectedUsers } = req.body;
+
+  try {
+    const newDepartment = await prisma.department.create({
+      data: {
+        id: generateUuid(),
+        ... department
+      },
+    });
+
+    for (const user of selectedUsers) {
+      await prisma.user.update({
+        where: {
+          id: user,
+        },
+        data: {
+          departmentId: newDepartment.id,
+        },
+      });
+    }
+
+    res.sendStatus(201);
+  }
+  catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+
+  
+  
+});
+
+
+app.get("/department/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const department = await prisma.department.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        User: true,
+      },
+    });
+
+    res.status(200).json(department);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener el departamento" });
+  }
+});
+
+
 
 const port = process.env.PORT || 8007;
 

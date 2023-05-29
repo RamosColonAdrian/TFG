@@ -14,8 +14,6 @@ const ZoneDetails = (props: Props) => {
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
-    
-
     useEffect(() => {
         const fetchZone = async () => {
             try {
@@ -40,19 +38,21 @@ const ZoneDetails = (props: Props) => {
         fetchUsers();
     }, []);
 
-
-
-
     const handleDelete = async (id: string) => {
         try {
-            const response = await axios.delete(`http://localhost:8007/user-to-zone/${id}`);
-            console.log(response);
+            await axios.delete(`http://localhost:8007/user-to-zone/${id}`)
+            .then(() => {
+                const newSelectedUsers = selectedUsers.filter((user) => user !== id);
+                setSelectedUsers(newSelectedUsers);
+            }
+            );
+
+            
+            
         } catch (error) {
             console.error(error);
         }
     };
-
-
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -71,9 +71,6 @@ const ZoneDetails = (props: Props) => {
             console.error(error);
         }
     };
-
-    
-
 
     if (!zone) return null;
 
@@ -143,8 +140,6 @@ const ZoneDetails = (props: Props) => {
                 >
                     Save
                 </button>
-
-
             </form>
 
             <div className="mt-4 border-b border-gray-300 my-6"></div>
@@ -175,19 +170,10 @@ const ZoneDetails = (props: Props) => {
                         ))
                             
                     }
-
                 </select>
-                        
-
             </div>
 
-           
-           
-                   
-
             <h1 className="text-2xl font-bold text-gray-900">Allowed Users</h1>
-
-
             {
                 zone.UserToZone.length !== 0 ? (
                     <div className="bg-white shadow-md rounded my-6">

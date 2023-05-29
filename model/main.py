@@ -9,8 +9,6 @@ app = FastAPI()
 def read_root():
     return {"Hello": "World"}
 
-
-
 @app.post("/classify")
 async def classify_controller(img: UploadFile = File(...)):
     contents = await img.read()
