@@ -113,7 +113,6 @@ const DepartamentDetails = (props: Props) => {
         });
     } catch (error) {
       toast.error("Error updating department");
-      console.log(error);
     }
   };
 

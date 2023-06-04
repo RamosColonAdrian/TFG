@@ -11,8 +11,6 @@ import time
 decoded_images = []
 image_names = []
 encoded_faces = []
-
-
     
 def loadImages():
     decoded_images.clear()
@@ -47,7 +45,6 @@ def encodeFaces(images):
 
 def reloadModel():
     loadImages()
-    print("Modelo recargado")
     global encoded_faces
     encoded_faces = encodeFaces(decoded_images)
 
@@ -65,10 +62,7 @@ def classifyFace(image):
             encoded_face = encoded_faces[i]
             try:
                 comparison = fr.compare_faces([encoded_face], face_encoded_numpy_array)
-                print (comparison)
                 if comparison[0] == True:
-                    print ("Se encontro un match")
-                    print(image_names[i])
                     return image_names[i].split('/')[1]
             except Exception as e:
                 print(e)

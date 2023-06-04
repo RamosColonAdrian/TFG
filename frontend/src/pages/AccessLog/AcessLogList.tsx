@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AccessLog } from '../../shared/Interfaces/Interfaces';
 import useRedirectBasedOnAuthentication from '../../hooks/useRedirectBasedOnAuthentication';
+import { toast } from 'react-toastify';
 
 const AccessLogList: React.FC = () => {
     const [accessLogs, setAccessLogs] = useState<AccessLog[]>([]);
@@ -38,7 +39,7 @@ const AccessLogList: React.FC = () => {
             });
             setAccessLogs(response.data);
         } catch (error) {
-            console.log('Error fetching access logs');
+            toast.error('Error fetching access logs');
         }
     };
 

@@ -78,7 +78,6 @@ app.post("/login", async (req, res) => {
         return res.sendStatus(401);
       }
     } catch {
-      console.log("error");
       return res.sendStatus(401);
     }
   } else {
@@ -280,7 +279,6 @@ app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
 
     const picture = result.secure_url;
 
-    console.log(picture);
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -309,7 +307,6 @@ app.post("/add-user-to-zone", async (req, res) => {
     zoneId: string;
     allowedById: string;
   };
-  console.log(userId, zoneId);
   try {
     await prisma.userToZone.create({
       data: {
@@ -581,9 +578,7 @@ app.get("/department/:id", async (req, res) => {
 app.put("/department/:id", async (req, res) => {
   const { id } = req.params;
   const { department } = req.body;
-
-  console.log(department);
-
+  
   try {
     await prisma.department.update({
       where: {
