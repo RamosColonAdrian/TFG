@@ -4,6 +4,11 @@ import Webcam from "react-webcam";
 import dataURLtoFile from "../../helpers/dataURLtoFile";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import clxs from "../../helpers/clxs";
+import { HiOutlineVideoCamera } from "react-icons/hi";
+
+
+
 
 const VideoPlayer = () => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -49,15 +54,15 @@ const VideoPlayer = () => {
             }
           );
           if (data.message !== "Desconocido") {
-            toast.success(`Bienvenido ${data.message}`);
+            toast.success(`Welcome ${data.message}`);
             setIsCapturing(false);
           }
         } catch (error) {
           setIsCapturing(false);
           if ((error as AxiosError).response?.status === 401) {
-            toast.error("No autorizado");
+            toast.warning("Not authorized");
           } else {
-            toast.error("Error desconocido");
+            toast.error("Unknown error");
           }
         }
       }, 500);
@@ -79,6 +84,7 @@ const VideoPlayer = () => {
       await new Promise((res) => {
         timeOut = setTimeout(() => {
           setIsCapturing(false);
+          toast.warning("User not recognized");
           res(1);
         }, 5000);
       });
@@ -93,20 +99,24 @@ const VideoPlayer = () => {
   };
 
   return (
-    <div>
-      <label htmlFor="camera-dropdown">Selecciona una cámara:</label>
-      <select
-        id="camera-dropdown"
-        value={selectedDeviceId}
-        onChange={handleDeviceChange}
-      >
-        {devices.map((device) => (
-          <option key={device.deviceId} value={device.deviceId}>
-            {device.label || `Cámara ${device.deviceId}`}
-          </option>
-        ))}
-      </select>
+    <div className="fixed top-0 left-0 w-screen h-screen flex flex-col bg-white bg-opacity-90">
+      <div className="fixed top-10 left-10 z-10 flex items-center gap-2 group h-8">
+        <label className="" htmlFor="camera-dropdown"><HiOutlineVideoCamera size={"2em"}/></label>
+        <select
+          className="hidden group-hover:block border border-black rounded-md p-1"
+          id="camera-dropdown"
+          value={selectedDeviceId}
+          onChange={handleDeviceChange}
+        >
+          {devices.map((device) => (
+            <option key={device.deviceId} value={device.deviceId}>
+              {device.label || `Cámara ${device.deviceId}`}
+            </option>
+          ))}
+        </select>
+      </div>
       <Webcam
+        className="w-full h-full"
         audio={false}
         ref={webcamRef}
         videoConstraints={{
@@ -115,7 +125,8 @@ const VideoPlayer = () => {
           height: 576,
         }}
       />
-      <button onClick={onCapture}>Capturar</button>
+      <button className={clxs("fixed top-10 right-10 border font-medium p-3 rounded-full", isCapturing ? "bg-red-500 border-red-500 text-white" : "border-black")}
+          onClick={onCapture}>Capturar</button>
     </div>
   );
 };
