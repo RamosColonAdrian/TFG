@@ -19,13 +19,20 @@ def loadImages():
     start_time_stamp =  time.time()
 
     cloudinary_resources = cloudinary.api.resources(type="upload", prefix="face_recognition", latest=True)
-
     cloudinary_images_data = []
+    transformations = [
+        {'width': 400, 'height': 400, 'gravity': 'face' },
+        # Add more transformations as needed
+    ]
+
+    # Generate the transformation string
+    transformationstr = "/".join(
+        [f"{k}{v}" for k, v in transformations[0].items()])
 
     for resource in cloudinary_resources['resources']:
         url = resource['url']
         filename = resource['public_id']
-        image_url = cloudinary.utils.cloudinary_url(url)[0]
+        image_url = cloudinary.utils.cloudinary_url(url, transformation=transformationstr)[0]
         image_data = requests.get(image_url).content
         cloudinary_images_data.append([filename, image_data])
 

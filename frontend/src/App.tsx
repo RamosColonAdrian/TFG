@@ -16,7 +16,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthContextProvider>
-        <ToastContainer />
+        <ToastContainer limit={1} newestOnTop />
         <Layout>
           <Routing />
         </Layout>

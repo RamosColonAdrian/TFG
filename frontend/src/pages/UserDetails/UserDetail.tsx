@@ -36,17 +36,12 @@ const UserDetail = (props: Props) => {
     formData.append("img", file as Blob);
     formData.append("id", userId as string);
 
-    axios
-      .put(`${import.meta.env.VITE_BASE_URL}/user/photo/${userId}`, formData)
-      .then((response) => {
-
-        toast.success("Photo updated");
-      }
-      )
-      .catch((error) => {
-        toast.error("Error updating photo");
-      }
-      );
+    toast.promise(
+      axios.put(`${import.meta.env.VITE_BASE_URL}/user/photo/${userId}`, formData), {
+      pending: "Uploading photo...",
+      success: "Photo updated",
+      error: "Error updating photo",
+    })
   };
 
   useRedirectBasedOnAuthentication("authenticated");
@@ -167,7 +162,7 @@ const UserDetail = (props: Props) => {
     <div className="max-w-4xl mx-auto  bg-white p-16">
       <h1 className="text-2xl font-bold text-gray-900 mb-9">User Details</h1>
       <div className="flex flex-col items-center mb-7">
-        <img className="w-56 mb-3 rounded-full" src={file ? URL.createObjectURL(file) : user.picture} alt="Profile Image" />
+        <img className="w-56 mb-3 rounded-full h-56 object-cover" src={file ? URL.createObjectURL(file) : user.picture} alt="Profile Image" />
         <FileUploader label="" multiple={false} handleChange={handleChange} maxFileCount={1} name="file" types={["JPG", "PNG"]} />
       </div>
       
