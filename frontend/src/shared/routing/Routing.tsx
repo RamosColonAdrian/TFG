@@ -12,42 +12,33 @@ import AddZone from "../../pages/AddZone/AddZone";
 import DepartamentList from "../../pages/DepartmentsList/DepartmentList";
 import AddDepartment from "../../pages/AddDepartment/AddDepartment";
 import DepartamentDetails from "../../pages/DepartmentDetails/DepartmentDetails";
+import AccessLogList from "../../pages/AccessLog/AcessLogList";
 
 type Props = {};
 
+function Routing({}: Props) {
+  const { authenticated } = useContext(authContext);
 
-
-function Routing({ }: Props) {
-    const { authenticated } = useContext(authContext);
-
-    return (
-
-        <Routes>
-            {authenticated ?
-                <>
-                    <Route path="/user/:userId" element={<UserDetail />} />
-                    <Route path="/users" element={<UserList />} />
-                    <Route path="/zone/:zoneId" element={<ZoneDetails />} />
-                    <Route path="/zone/add" element={<AddZone />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/departments" element={<DepartamentList />} />
-                    <Route path="/department/add" element={<AddDepartment />} />
-                    <Route path="/department/:departId" element={<DepartamentDetails />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/zones" element={<ZonesList />} />
-                    <Route path="/video" element={<VideoPlayer />} />
-                </>
-                :
-                <>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/video" element={<VideoPlayer />} />
-                    <Route path="*" element={<Register />} />
-
-                </>
-            }
-        </Routes>
-    );
+  return (
+    <Routes>
+      {/*  loggeado */}
+      <Route path="/user/:userId" element={<UserDetail />} />
+      <Route path="/users" element={<UserList />} />
+      <Route path="/zone/add" element={<AddZone />} />
+      <Route path="/zone/:zoneId" element={<ZoneDetails />} />
+      <Route path="/departments" element={<DepartamentList />} />
+      <Route path="/department/add" element={<AddDepartment />} />
+      <Route path="/department/:departId" element={<DepartamentDetails />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/zones" element={<ZonesList />} />
+      <Route path="/access" element={<AccessLogList />} />
+      {/* no loggeado */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/video/:zoneId" element={<VideoPlayer />} />
+      <Route path="*" element={<Login />} />
+    </Routes>
+  );
 }
 
 export default Routing;

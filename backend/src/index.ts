@@ -40,7 +40,7 @@ app.post(
     };
 
     const picture =
-      "https://res.cloudinary.com/dqrqizfkt/image/upload/v1684671418/default/default_user.png";
+      "https://res.cloudinary.com/dqrqizfkt/image/upload/v1685816526/default/default_user.png";
 
     const hashedPassword = await hash(password, 10);
 
@@ -118,6 +118,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/recognizer", multer.single("img"), async (req, res) => {
   const img = req.file;
+  const { zoneId } = req.body as { zoneId: string };
 
   const formData = new FormData();
   formData.append("img", img?.buffer, {
@@ -136,13 +137,31 @@ app.post("/recognizer", multer.single("img"), async (req, res) => {
       }
     );
 
-    //TODO: cambiar el id de la zona
+    const userToZone = await prisma.userToZone.findFirst({
+      where: {
+        userId: data,
+        zoneId,
+      },
+    });
+
+    if (!userToZone) {
+      await prisma.accessLog.create({
+        data: {
+          id: generateUuid(),
+          userId: data,
+          access: false,
+          zoneId,
+        },
+      });
+      return res.status(401).json({ error: "User not allowed" });
+    }
+
     await prisma.accessLog.create({
       data: {
         id: generateUuid(),
         userId: data,
         access: true,
-        zoneId: "467f16fe-2115-4924-8225-09b964937efb",
+        zoneId,
       },
     });
 
@@ -153,6 +172,17 @@ app.post("/recognizer", multer.single("img"), async (req, res) => {
 });
 
 app.get("/users", async (req, res) => {
+  const { page = 1 } = req.query;
+  const users = await prisma.user.findMany({
+    skip: (+page - 1) * 10,
+    take: 10,
+    
+  });
+
+  res.status(200).json(users);
+});
+
+app.get("/users-departments", async (req, res) => {
   const { page = 1 } = req.query;
   const users = await prisma.user.findMany({
     skip: (+page - 1) * 10,
@@ -202,10 +232,10 @@ app.delete("/users/:id", async (req, res) => {
   const userId = req.params.id;
 
   try {
-    await prisma.user.delete({
+    const user = await prisma.user.delete({
       where: { id: userId },
     });
-    res.json({ message: "User deleted" });
+    res.json(user);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error deleting user");
@@ -221,11 +251,12 @@ app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
   }
 
   try {
-    await new Promise((resolve, reject) => {
+    const result: any = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
           folder: "face_recognition",
           public_id: userId,
+          overwrite: true,
         },
         (error, result) => {
           if (result) {
@@ -240,8 +271,8 @@ app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
       stream.end();
     });
 
-    const picture = `https://res.cloudinary.com/dqrqizfkt/image/upload/v1684604332/face_recognition/${userId}.jpg`;
-
+    const picture = result.secure_url;
+    console.log(picture);
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -263,16 +294,19 @@ app.get("/departments", async (req, res) => {
 });
 
 app.post("/add-user-to-zone", async (req, res) => {
-  const { userId, zoneId } = req.body as { userId: string; zoneId: string };
+  const { userId, zoneId, allowedById } = req.body as {
+    userId: string;
+    zoneId: string;
+    allowedById: string;
+  };
   console.log(userId, zoneId);
   try {
-    //TODO: cambiar el id del usuario allowed by
     await prisma.userToZone.create({
       data: {
         id: generateUuid(),
         userId,
         zoneId,
-        allowedBy: "14557d09-8cc1-40eb-8749-eb453f2211e8",
+        allowedBy: allowedById,
       },
     });
 
@@ -280,9 +314,15 @@ app.post("/add-user-to-zone", async (req, res) => {
       where: {
         id: zoneId,
       },
+      include: {
+        UserToZone: {
+          include: {
+            User: true,
+          },
+        },
+      },
     });
 
-  
     res.status(200).json(zone);
   } catch (error) {
     console.error(error);
@@ -301,6 +341,9 @@ app.get("/allowed-zones/:userId", async (req, res) => {
           },
         },
       },
+      include: {
+        UserToZone: true,
+      },
     });
     res.status(200).json(allowedZones);
   } catch (error) {
@@ -309,10 +352,30 @@ app.get("/allowed-zones/:userId", async (req, res) => {
   }
 });
 
-
 app.get("/zones", async (req, res) => {
   const zones = await prisma.zone.findMany({});
   res.status(200).json(zones);
+});
+
+app.delete("/zones/:id", async (req, res) => {
+  const zoneId = req.params.id;
+
+  try {
+    await prisma.userToZone.deleteMany({
+      where: {
+        zoneId,
+      },
+    });
+
+    await prisma.zone.delete({
+      where: { id: zoneId },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting zone");
+  }
 });
 
 app.put("/zones/:id", async (req, res) => {
@@ -377,31 +440,12 @@ app.get("/zones/:id", async (req, res) => {
   }
 });
 
-app.get("/users-to-zones/:zoneId", async (req, res) => {
-  const { zoneId } = req.params;
+app.delete("/user-to-zone/:id", async (req, res) => {
+  const { id } = req.params;
   try {
-    const usersToZones = await prisma.userToZone.findMany({
+    await prisma.userToZone.delete({
       where: {
-        zoneId,
-      },
-      include: {
-        User: true,
-      },
-    });
-
-    res.status(200).json(usersToZones);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
-
-app.delete("/user-to-zone/:zoneId", async (req, res) => {
-  const { zoneId } = req.params;
-  try {
-    await prisma.userToZone.deleteMany({
-      where: {
-        zoneId,
+        id,
       },
     });
     res.sendStatus(200);
@@ -447,7 +491,7 @@ app.post("/add-zone-user-to-zone", async (req, res) => {
         updatedAt: new Date(),
       },
     });
- //todo: cambiar el id del usuario allowed by
+    //todo: cambiar el id del usuario allowed by
     for (const user of selectedUsers) {
       await prisma.userToZone.create({
         data: {
@@ -471,7 +515,7 @@ app.get("/departments-and-users", async (req, res) => {
       User: true,
     },
   });
-  
+
   res.status(200).json(departments);
 });
 
@@ -482,7 +526,7 @@ app.post("/department", async (req, res) => {
     const newDepartment = await prisma.department.create({
       data: {
         id: generateUuid(),
-        ... department
+        ...department,
       },
     });
 
@@ -498,16 +542,11 @@ app.post("/department", async (req, res) => {
     }
 
     res.sendStatus(201);
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
-
-  
-  
 });
-
 
 app.get("/department/:id", async (req, res) => {
   const { id } = req.params;
@@ -526,6 +565,76 @@ app.get("/department/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener el departamento" });
+  }
+});
+
+app.put("/department/:id", async (req, res) => {
+  const { id } = req.params;
+  const { department } = req.body;
+
+  console.log(department);
+
+  try {
+    await prisma.department.update({
+      where: {
+        id,
+      },
+      data: {
+        ...department,
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+app.get("/access-logs", async (req, res) => {
+  const { username, sortBy, sortDirection } = req.query as {
+    username?: string;
+    sortBy?: string;
+    sortDirection?: string;
+  };
+
+  try {
+    let accessLogs;
+
+    const orderBy = {
+      [sortBy as string]: sortDirection === "desc" ? "desc" : "asc",
+    };
+
+    if (username) {
+      accessLogs = await prisma.accessLog.findMany({
+        where: {
+          User: {
+            name: {
+              contains: username,
+              mode: "insensitive",
+            },
+          },
+        },
+        include: {
+          User: true,
+          Zone: true,
+        },
+        orderBy,
+      });
+    } else {
+      accessLogs = await prisma.accessLog.findMany({
+        include: {
+          User: true,
+          Zone: true,
+        },
+        orderBy,
+      });
+    }
+
+    res.status(200).json(accessLogs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener el log de acceso" });
   }
 });
 

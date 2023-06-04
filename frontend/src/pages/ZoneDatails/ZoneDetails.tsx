@@ -1,240 +1,364 @@
-import { useState, useEffect, } from 'react'
-import axios from 'axios'
-import { User, Zone } from '../../shared/Interfaces/Interfaces'
-import { Link, useParams } from 'react-router-dom'
-import { format } from 'date-fns'
-import { toast } from 'react-toastify'
+import { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { User, Zone } from "../../shared/Interfaces/Interfaces";
+import { Link, useParams } from "react-router-dom";
+import { format } from "date-fns";
+import { toast } from "react-toastify";
+import DeleteModal from "../../shared/components/DeleteModal/DeleteModal";
+import { BsExclamationTriangle } from "react-icons/bs";
+import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuthentication";
+import { authContext } from "../../contexts/authContext/authContext";
 
-type Props = {}
+type Props = {};
 
 const ZoneDetails = (props: Props) => {
-    const { zoneId } = useParams();
-    const [zone, setZone] = useState<Zone>();
-    const [isMaxLengthReached, setIsMaxLengthReached] = useState(false);
-    const [users, setUsers] = useState<User[]>([]);
-    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const { zoneId } = useParams();
+  const [zone, setZone] = useState<Zone>();
+  const [isMaxLengthReached, setIsMaxLengthReached] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string>();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDeleteId, setUserToDeleteId] = useState("");
+  const { userInfo } = useContext(authContext);
 
-    useEffect(() => {
-        const fetchZone = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8007/zones/${zoneId}`);
-                setZone(response.data);
-            } catch (error) {
-                console.error(error);
+  useRedirectBasedOnAuthentication("authenticated");
+
+  const openDeleteModal = (userId: string) => {
+    setIsDeleteModalOpen(true);
+    setUserToDeleteId(userId);
+  };
+
+  useEffect(() => {
+    const fetchZone = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8007/zones/${zoneId}`
+        );
+        setZone(response.data);
+      } catch (error) {
+        toast.error("Zone not found");
+      }
+    };
+    fetchZone();
+  }, [zoneId]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://localhost:8007/users");
+        setUsers(response.data);
+      } catch (error) {
+        toast.error("Users not found");
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  const handleDeleteUser = (userToZoneId: string) => {
+    try {
+      axios
+        .delete(`http://localhost:8007/user-to-zone/${userToZoneId}`)
+        .then(() => {
+          toast.success("User removed from zone");
+          zone?.UserToZone.some((userToZone, index) => {
+            if (userToZone.id === userToZoneId) {
+              zone.UserToZone.splice(index, 1);
+              setZone({ ...zone });
+              return true;
             }
-        };
-        fetchZone();
-    }, [zoneId]);
+            return false;
+          });
+        });
+    } catch (error) {
+      toast.error("User not removed from zone");
+    }
+    handleDelete(userToDeleteId);
+    setIsDeleteModalOpen(false);
+  };
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get('http://localhost:8007/users');
-                setUsers(response.data);
-            } catch (error) {
-                console.error(error);
+  const handleDelete = async (userToZoneId: string) => {
+    try {
+      await axios
+        .delete(`http://localhost:8007/user-to-zone/${userToZoneId}`)
+        .then(() => {
+          toast.success("User removed from zone");
+          zone?.UserToZone.some((userToZone, index) => {
+            if (userToZone.id === userToZoneId) {
+              zone.UserToZone.splice(index, 1);
+              setZone({ ...zone });
+              return true;
             }
-        };
-        fetchUsers();
-    }, []);
+            return false;
+          });
+        });
+    } catch (error) {
+      toast.error("User not removed from zone");
+    }
+  };
 
-    const handleDelete = async (id: string) => {
-        try {
-            await axios.delete(`http://localhost:8007/user-to-zone/${id}`)
-            .then(() => {
-                const newSelectedUsers = selectedUsers.filter((user) => user !== id);
-                setSelectedUsers(newSelectedUsers);
-            }
-            );
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-            
-            
-        } catch (error) {
-            console.error(error);
-        }
+    const zoneExlude = {
+      id: zone?.id,
+      name: zone?.name,
+      description: zone?.description,
+      location: zone?.location,
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    try {
+      await axios
+        .put(`http://localhost:8007/zones/${zoneId}`, zoneExlude)
+        .then(() => {
+          toast.success("Zone updated successfully");
+        });
+    } catch (error) {
+      toast.error("Zone not updated");
+    }
+  };
 
-        const zoneExlude = {
-            id: zone?.id,
-            name: zone?.name,
-            description: zone?.description,
-            location: zone?.location,
-        }
+  function addUsersToZone(userId: string) {
+    if (zone?.UserToZone.some((userToZone) => userToZone.User.id === userId)) {
+      toast.error("User already added to the zone");
+      return;
+    }
+    const zoneId = zone?.id;
+    axios
+      .post(`http://localhost:8007/add-user-to-zone`, {
+        zoneId,
+        userId,
+        allowedById: userInfo.id,
+      })
+      .then((response) => {
+        setZone(response.data);
+        toast.success("User added to the zone");
+      })
+      .catch((error) => {
+        toast.error("Error adding user to zone");
+      });
+  }
 
-        try {
-            const response = await axios.put(`http://localhost:8007/zones/${zoneId}`, zoneExlude);
-            console.log(response);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+  function getUserById(userId: string) {
+    const user = users.find((user) => user.id === userId);
+    return user?.name;
+  }
 
-    if (!zone) return null;
+  if (!zone) return null;
 
-    return (
-        <div className="max-w-4xl mx-auto bg-white p-16">
-            <h1 className="text-2xl font-bold text-gray-900 mb-9">Zone Details</h1>
+  return (
+    <div className="max-w-4xl  bg-white p-16">
+      <h1 className="text-2xl font-bold text-gray-900 mb-9">Zone Details</h1>
 
-            <form onSubmit={handleSubmit}>
-                <div className="grid gap-6 mb-6 lg:grid-cols-2 w-full">
-                    <div>
-                        <label
-                            htmlFor="name"
-                            className="block mb-2 text-sm font-medium text-gray-900 "
-                        >
-                            Zone Name
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            value={zone.name}
-                            onChange={(e) => setZone({ ...zone, name: e.target.value })}
-                        />
-                    </div>
+      <form onSubmit={handleSubmit}>
+        <div className="grid gap-6 mb-6 lg:grid-cols-2 w-full">
+          <div>
+            <label
+              htmlFor="name"
+              className="block mb-2 text-sm font-medium text-gray-900 "
+            >
+              Zone Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              value={zone.name}
+              onChange={(e) => setZone({ ...zone, name: e.target.value })}
+            />
+          </div>
 
-                    <div>
-                        <label
-                            htmlFor="location"
-                            className="block mb-2 text-sm font-medium text-gray-900 "
-                        >
-                            Location
-                        </label>
-                        <input
-                            type="text"
-                            id="location"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            value={zone.location}
-                            onChange={(e) => setZone({ ...zone, location: e.target.value })}
-                        />
-                    </div>
+          <div>
+            <label
+              htmlFor="location"
+              className="block mb-2 text-sm font-medium text-gray-900 "
+            >
+              Location
+            </label>
+            <input
+              type="text"
+              id="location"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              value={zone.location}
+              onChange={(e) => setZone({ ...zone, location: e.target.value })}
+            />
+          </div>
 
-                    <div>
-                        <label
-                            htmlFor="description"
-                            className="block mb-2 text-sm font-medium text-gray-900 "
-                        >
-                            Description
-                        </label>
-                        <textarea
-                            id="description"
-                            className={`bg-gray-50 border ${isMaxLengthReached ? 'border-yellow-500 bg-yellow-50 ' : 'border-gray-300'
-                                } text-gray-900 text-sm rounded-lg  block w-full p-2.5`}
-                            value={zone.description}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setZone({ ...zone, description: value });
-                                setIsMaxLengthReached(value.length >= 80);
-                            }}
-                            maxLength={80}
-                        />
+          <div>
+            <label
+              htmlFor="description"
+              className="block mb-2 text-sm font-medium text-gray-900 "
+            >
+              Description
+            </label>
+            <textarea
+              id="description"
+              className={`bg-gray-50 border ${
+                isMaxLengthReached
+                  ? "border-yellow-500 bg-yellow-50 "
+                  : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg  block w-full p-2.5`}
+              value={zone.description}
+              onChange={(e) => {
+                const value = e.target.value;
+                setZone({ ...zone, description: value });
+                setIsMaxLengthReached(value.length >= 80);
+              }}
+              maxLength={80}
+            />
 
-                    </div>
-                </div>
-                <button
-                    className="px-4 py-1 text-white font-light tracking-wider bg-gray-600 hover:bg-gray-800 rounded"
-                    type="submit"
-                >
-                    Save
-                </button>
-            </form>
-
-            <div className="mt-4 border-b border-gray-300 my-6"></div>
-            <div className='flex items-center justify-between mb-10'>
-                <button
-                    className="group rounded h-10 w-32 bg-blue-400 text-base text-white relative overflow-hidden mr-5"
-                    //todo add user to zone
-                >
-                    Add User
-                    <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-xl"></div>
-                </button>
-
-                <select className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/4 p-2.5"
-                    //TODO: add user to zone
-                    onChange={(e) => {
-                        const selectedUserId = e.target.value;
-                        if (!selectedUsers.includes(selectedUserId)) {
-                            setSelectedUsers([...selectedUsers, selectedUserId]);
-                        } else {
-                            toast.warning('User already selected');
-                        }
-                    }}
-                >
-                    <option value="">Select User</option>
-                    {
-                        users.map((user) => (
-                            <option key={user.id} value={user.id}>{user.name}</option>
-                        ))
-                            
-                    }
-                </select>
-            </div>
-
-            <h1 className="text-2xl font-bold text-gray-900">Allowed Users</h1>
-            {
-                zone.UserToZone.length !== 0 ? (
-                    <div className="bg-white shadow-md rounded my-6">
-
-
-                        <table className="min-w-max w-full table-auto">
-                            <thead>
-                                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                                    <th className="py-3 px-6 text-center">Name</th>
-                                    <th className="py-3 px-6 text-center">Allowed by</th>
-                                    <th className="py-3 px-6 text-center">Date</th>
-                                    <th className="py-3 px-6 text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-gray-600 text-sm font-light">
-                                {zone.UserToZone.map((userToZone) => (
-                                    <tr className="border-b border-gray-200 bg-gray-50 hover:bg-gray-100">
-                                        <td className="py-3 px-6 text-left">
-                                            {userToZone.User.name}
-                                        </td>
-                                        <td className="py-3 px-6 text-center">
-                                            {userToZone.User.id}
-                                        </td>
-                                        <td className="py-3 px-6 text-center">
-                                            <p>Create at: {format(new Date(userToZone.createdAt), 'dd/MM/yyyy')}</p>
-                                            <p>Last Update: {format(new Date(userToZone.updatedAt), 'dd/MM/yyyy')}</p>
-                                        </td>
-
-                                        <td className="py-3 px-6 text-center">
-                                            <div className="w-6 mr-2 transform hover:text-purple-500 hover:scale-110 text-center"
-                                                onClick={() => { handleDelete(userToZone.id) }}
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                ))}
-
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <div>
-
-                        <p className="text-gray-600 text-sm font-light">No users allowed</p>
-                    </div>
-                )
-            }
-
-
-
-
+            {isMaxLengthReached && (
+              <div className="flex items-center mt-2">
+                <BsExclamationTriangle className="text-red-500 mr-1" />
+                <p className="text-red-500 text-xs">Exceeded character limit</p>
+              </div>
+            )}
+          </div>
         </div>
+        <button
+          className="px-4 py-1 text-white font-light tracking-wider bg-gray-600 hover:bg-gray-800 rounded"
+          type="submit"
+        >
+          Save
+        </button>
+      </form>
 
+      <div className="mt-4 border-b border-gray-300 my-6"></div>
+      <div className="flex items-center justify-between mb-10">
+        <button
+          className="group rounded h-10 w-32 bg-blue-400 text-base text-white relative overflow-hidden mr-5"
+          onClick={() => {
+            if (selectedUser) {
+              addUsersToZone(selectedUser);
+            }
+          }}
+        >
+          Add User
+          <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-xl"></div>
+        </button>
 
+        <select
+          className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/4 p-2.5"
+          onChange={(e) => {
+            setSelectedUser(e.target.value);
+          }}
+        >
+          <option value="" className="text-gray-400 italic">
+            ~ Select User ~
+          </option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
+      <h1 className="text-2xl font-bold text-gray-900">Allowed Users</h1>
+      {zone.UserToZone.length !== 0 ? (
+        <div className="bg-white shadow-md rounded my-6">
+          <table className="min-w-max w-full table-auto">
+            <thead>
+              <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                <th className="py-3 px-6 text-center">Name</th>
+                <th className="py-3 px-6 text-center">Allowed by</th>
+                <th className="py-3 px-6 text-center">Date</th>
+                <th className="py-3 px-6 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600 text-sm font-light">
+              {zone.UserToZone.map((userToZone) => (
+                <tr
+                  key={userToZone.id}
+                  className="border-b border-gray-200 bg-gray-50 hover:bg-gray-100"
+                >
+                  <td className="py-3 px-6 text-left">
+                    {userToZone.User.name}
+                  </td>
 
-    )
-}
+                  <td className="py-3 px-6 text-center">
+                    {getUserById(userToZone.allowedBy)}
+                  </td>
+                  <td className="py-3 px-6 text-center">
+                    <p>
+                      Create at:{" "}
+                      {format(new Date(userToZone.createdAt), "dd/MM/yyyy")}
+                    </p>
+                    <p>
+                      Last Update:{" "}
+                      {format(new Date(userToZone.updatedAt), "dd/MM/yyyy")}
+                    </p>
+                  </td>
+
+                  <td className="py-3 px-6 text-center">
+                    <div className="flex items-center justify-center space-x-2">
+                      {" "}
+                      {/* Agregada la clase "justify-center" */}
+                      <div
+                        onClick={() => openDeleteModal(userToZone.id)}
+                        className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </div>
+                      <Link
+                        to={`/user/${userToZone.User.id}`}
+                        className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                      >
+                        <div className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                            />
+                          </svg>
+                        </div>
+                      </Link>
+                      <DeleteModal
+                        isOpen={isDeleteModalOpen}
+                        onRequestClose={() => setIsDeleteModalOpen(false)}
+                        onDelete={() => {
+                          handleDeleteUser(userToZone.id);
+                        }}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div>
+          <p className="text-gray-600 text-sm font-light">No users allowed</p>
+        </div>
+      )}
+
+      <Link
+        to={`/video/${zone.id}`}
+        className="text-blue-500 hover:text-blue-600"
+      >
+        Start recording access
+      </Link>
+    </div>
+  );
+};
 
 export default ZoneDetails;

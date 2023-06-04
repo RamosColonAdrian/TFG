@@ -2,21 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
-    margin: 0;
-    background: #cccccc;
-    font-family: system-ui;
-    display: grid;
-    place-content: center;
-    min-height: 100vh;
-}
 
-.App{
+#root {
+    width: 100%;
     display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
     flex-direction: column;
-    gap: 8px;
-}
-
-#root{
-    min-width: 100vw;
+  
 }
