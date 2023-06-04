@@ -18,7 +18,7 @@ const AddZone = (props: Props) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8007/user");
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/user`);
         setUsers(response.data);
       } catch (error) {
         toast.error("Error fetching users");
@@ -57,11 +57,11 @@ const AddZone = (props: Props) => {
   };
 
   async function createZone() {
-    await axios.post("http://localhost:8007/zone", zone);
+    await axios.post(`${import.meta.env.VITE_BASE_URL}/zone`, zone);
   }
 
   async function createUserToZone() {
-    await axios.post("http://localhost:8007/zone/with-users", {
+    await axios.post(`${import.meta.env.VITE_BASE_URL}/zone/with-users`, {
       zone,
       selectedUsers,
     });

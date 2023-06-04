@@ -40,7 +40,7 @@ const VideoPlayer = () => {
 
         try {
           const { data } = await axios.post(
-            "http://localhost:8007/recognizer",
+            `${import.meta.env.VITE_BASE_URL}/recognizer`,
             formData,
             {
               headers: {

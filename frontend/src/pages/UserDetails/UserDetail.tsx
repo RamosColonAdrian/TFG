@@ -37,7 +37,7 @@ const UserDetail = (props: Props) => {
     formData.append("id", userId as string);
 
     axios
-      .put(`http://localhost:8007/user/photo/${userId}`, formData)
+      .put(`${import.meta.env.VITE_BASE_URL}/user/photo/${userId}`, formData)
       .then((response) => {
 
         toast.success("Photo updated");
@@ -53,7 +53,7 @@ const UserDetail = (props: Props) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8007/user/${userId}`)
+      .get(`${import.meta.env.VITE_BASE_URL}/user/${userId}`)
       .then((response) => {
         setUser(response.data);
       })
@@ -64,7 +64,7 @@ const UserDetail = (props: Props) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8007/department")
+      .get(`${import.meta.env.VITE_BASE_URL}/department`)
       .then((response) => {
         setDepartments(response.data);
       })
@@ -75,7 +75,7 @@ const UserDetail = (props: Props) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8007/zone")
+      .get(`${import.meta.env.VITE_BASE_URL}/zone`)
       .then((response) => {
         setZones(response.data);
         if (response.data.length > 0) setSelectedZone(response.data[0].id);
@@ -87,7 +87,7 @@ const UserDetail = (props: Props) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8007/user-to-zone/${userId}`)
+      .get(`${import.meta.env.VITE_BASE_URL}/user-to-zone/${userId}`)
       .then((response) => {
         setAllowedZones(response.data);
       })
@@ -103,7 +103,7 @@ const UserDetail = (props: Props) => {
     }
 
     axios
-      .post(`http://localhost:8007/user-to-zone`, {
+      .post(`${import.meta.env.VITE_BASE_URL}/user-to-zone`, {
         zoneId,
         userId,
         allowedById: userInfo.id,
@@ -137,7 +137,7 @@ const UserDetail = (props: Props) => {
     };
 
     await axios
-      .put(`http://localhost:8007/user/${userId}`, userExclude)
+      .put(`${import.meta.env.VITE_BASE_URL}/user/${userId}`, userExclude)
       .then((response) => {
         toast.success("User updated successfully");
       })
@@ -148,7 +148,7 @@ const UserDetail = (props: Props) => {
 
   const handleDeleteZone = async () => {
     await axios
-      .delete(`http://localhost:8007/user-to-zone/${zoneToDeleteId}`)
+      .delete(`${import.meta.env.VITE_BASE_URL}/user-to-zone/${zoneToDeleteId}`)
       .then((response) => {
         setAllowedZones(
           allowedZones.filter((zone) => zone.UserToZone[0].id !== zoneToDeleteId)

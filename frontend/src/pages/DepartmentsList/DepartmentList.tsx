@@ -12,7 +12,7 @@ const DepartamentList: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8007/department?withUsers=true")
+      .get(`${import.meta.env.VITE_BASE_URL}/department?withUsers=true`)
       .then((response) => {
         setDepartments(response.data);
       });

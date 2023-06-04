@@ -30,7 +30,7 @@ const AccessLogList: React.FC = () => {
 
     const fetchAccessLogs = async () => {
         try {
-            const response = await axios.get('http://localhost:8007/access-logs', {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/access-logs`, {
                 params: {
                     username: searchTerm,
                     sortBy: sortBy || undefined, // Asegúrate de pasar undefined si sortBy es falsy

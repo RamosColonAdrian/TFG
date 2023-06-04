@@ -64,7 +64,7 @@ export default function AuthContextProvider({
 
 
     const { data } = await axios.post(
-      "http://localhost:8007/auth/login",
+      `${import.meta.env.VITE_BASE_URL}/auth/login`,
       { email, password },
       {
         headers: {
@@ -84,7 +84,7 @@ export default function AuthContextProvider({
 
   const register = async ({ email, name, password, surname }: RegisterDTO) => {
     await axios.post(
-      "http://localhost:8007/auth/register",
+      `${import.meta.env.VITE_BASE_URL}/auth/register`,
       { email, password, name, surname },
       {
         headers: {

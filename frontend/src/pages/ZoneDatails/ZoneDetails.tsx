@@ -32,7 +32,7 @@ const ZoneDetails = (props: Props) => {
     const fetchZone = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8007/zone/${zoneId}`
+          `${import.meta.env.VITE_BASE_URL}/zone/${zoneId}`
         );
         setZone(response.data);
       } catch (error) {
@@ -45,7 +45,7 @@ const ZoneDetails = (props: Props) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8007/user");
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/user`);
         setUsers(response.data);
       } catch (error) {
         toast.error("Users not found");
@@ -59,7 +59,7 @@ const ZoneDetails = (props: Props) => {
   const handleDelete = async (userToZoneId: string) => {
     try {
       await axios
-        .delete(`http://localhost:8007/user-to-zone/${userToZoneId}`)
+        .delete(`${import.meta.env.VITE_BASE_URL}/user-to-zone/${userToZoneId}`)
         .then(() => {
           toast.success("User removed from zone");
           zone?.UserToZone.some((userToZone, index) => {
@@ -88,7 +88,7 @@ const ZoneDetails = (props: Props) => {
 
     try {
       await axios
-        .put(`http://localhost:8007/zone/${zoneId}`, zoneExlude)
+        .put(`${import.meta.env.VITE_BASE_URL}/zone/${zoneId}`, zoneExlude)
         .then(() => {
           toast.success("Zone updated successfully");
         });
@@ -104,7 +104,7 @@ const ZoneDetails = (props: Props) => {
     }
     const zoneId = zone?.id;
     axios
-      .post(`http://localhost:8007/user-to-zone`, {
+      .post(`${import.meta.env.VITE_BASE_URL}/user-to-zone`, {
         zoneId,
         userId,
         allowedById: userInfo.id,
