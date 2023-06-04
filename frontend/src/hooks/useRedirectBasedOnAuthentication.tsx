@@ -5,10 +5,12 @@ import { useNavigate } from "react-router-dom";
 type Auth = "authenticated" | "unauthenticated";
 
 export default function useRedirectBasedOnAuthentication(auth: Auth) {
-  const { authenticated } = useContext(authContext);
+  const { authenticated, loading } = useContext(authContext);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (loading) return;
+
     if (auth === "authenticated" && !authenticated) {
       navigate("/login");
     }

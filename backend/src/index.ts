@@ -272,6 +272,7 @@ app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
     });
 
     const picture = result.secure_url;
+    
     console.log(picture);
     const user = await prisma.user.update({
       where: { id: userId },

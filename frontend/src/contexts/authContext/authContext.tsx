@@ -5,6 +5,7 @@ import { RegisterDTO } from "../../App";
 import { useNavigate } from "react-router-dom";
 
 type AuthContextType = {
+  loading: boolean;
   authenticated: boolean;
   userInfo: {
     id: string;
@@ -45,11 +46,14 @@ export default function AuthContextProvider({
     {} as AuthContextType["userInfo"]
   );
   const navigate = useNavigate();
+    
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (!token) {
+      setLoading(false);
       return;
     }
 
@@ -57,6 +61,8 @@ export default function AuthContextProvider({
   }, []);
 
   const login = async (email: string, password: string, token?: string) => {
+
+
     const { data } = await axios.post(
       "http://localhost:8007/login",
       { email, password },
@@ -73,6 +79,7 @@ export default function AuthContextProvider({
     localStorage.setItem("token", returnedToken);
     setUserInfo(user);
     setAuthenticated(true);
+    setLoading(false);
   };
 
   const register = async ({ email, name, password, surname }: RegisterDTO) => {
@@ -98,6 +105,7 @@ export default function AuthContextProvider({
   return (
     <authContext.Provider
       value={{
+        loading,
         authenticated,
         userInfo,
         login,

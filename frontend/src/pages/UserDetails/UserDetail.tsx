@@ -164,11 +164,11 @@ const UserDetail = (props: Props) => {
 
 
   return (
-    <div className="max-w-4xl  bg-white p-16">
+    <div className="max-w-4xl mx-auto  bg-white p-16">
       <h1 className="text-2xl font-bold text-gray-900 mb-9">User Details</h1>
       <div className="flex flex-col items-center mb-7">
         <img className="w-56 mb-3 rounded-full" src={file ? URL.createObjectURL(file) : user.picture} alt="Profile Image" />
-        <FileUploader multiple={false} handleChange={handleChange} maxFileCount={1} name="file" types={["JPG", "PNG"]}  />
+        <FileUploader label="" multiple={false} handleChange={handleChange} maxFileCount={1} name="file" types={["JPG", "PNG"]} />
       </div>
       
 

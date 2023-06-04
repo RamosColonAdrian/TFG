@@ -54,27 +54,7 @@ const ZoneDetails = (props: Props) => {
     fetchUsers();
   }, []);
 
-  const handleDeleteUser = (userToZoneId: string) => {
-    try {
-      axios
-        .delete(`http://localhost:8007/user-to-zone/${userToZoneId}`)
-        .then(() => {
-          toast.success("User removed from zone");
-          zone?.UserToZone.some((userToZone, index) => {
-            if (userToZone.id === userToZoneId) {
-              zone.UserToZone.splice(index, 1);
-              setZone({ ...zone });
-              return true;
-            }
-            return false;
-          });
-        });
-    } catch (error) {
-      toast.error("User not removed from zone");
-    }
-    handleDelete(userToDeleteId);
-    setIsDeleteModalOpen(false);
-  };
+  
 
   const handleDelete = async (userToZoneId: string) => {
     try {
@@ -146,7 +126,7 @@ const ZoneDetails = (props: Props) => {
   if (!zone) return null;
 
   return (
-    <div className="max-w-4xl  bg-white p-16">
+    <div className="max-w-4xl mx-auto  bg-white p-16">
       <h1 className="text-2xl font-bold text-gray-900 mb-9">Zone Details</h1>
 
       <form onSubmit={handleSubmit}>
@@ -335,7 +315,7 @@ const ZoneDetails = (props: Props) => {
                         isOpen={isDeleteModalOpen}
                         onRequestClose={() => setIsDeleteModalOpen(false)}
                         onDelete={() => {
-                          handleDeleteUser(userToZone.id);
+                          handleDelete(userToZone.id);
                         }}
                       />
                     </div>

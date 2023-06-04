@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AccessLog } from '../../shared/Interfaces/Interfaces';
+import useRedirectBasedOnAuthentication from '../../hooks/useRedirectBasedOnAuthentication';
 
 const AccessLogList: React.FC = () => {
     const [accessLogs, setAccessLogs] = useState<AccessLog[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+    useRedirectBasedOnAuthentication("authenticated");
+
 
     const handleSort = (column: string) => {
         if (column === sortBy) {

@@ -2,12 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-
-#root {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    flex-direction: column;
-  
-}

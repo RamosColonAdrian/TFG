@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, NavLink } from "react-router-dom";
 import { authContext } from "../contexts/authContext/authContext";
 
 type Props = {
@@ -16,16 +16,16 @@ const Layout = ({ children }: Props) => {
           <ul className="flex p-2 justify-between">
             <div className="flex gap-3">
               <li>
-                <Link to="/users">Users</Link>
+                <NavLink to="/users" className={({isActive})=>isActive && "text-indigo-600" || "hover:text-indigo-600"}>Users</NavLink>
               </li>
               <li>
-                <Link to="/zones">Zones</Link>
+                <NavLink to="/zones" className={({ isActive }) => isActive && "text-indigo-600" || "hover:text-indigo-600"}>Zones</NavLink>
               </li>
               <li>
-                <Link to="/departments">Departments</Link>
+                <NavLink to="/departments" className={({isActive})=>isActive && "text-indigo-600" || "hover:text-indigo-600"}>Departments</NavLink>
               </li>
               <li>
-                <Link to="/access">AccessLog</Link>
+                <NavLink to="/access" className={({ isActive }) => isActive && "text-indigo-600" || "hover:text-indigo-600"}>Access Logs</NavLink>
               </li>
             </div>
             <li>

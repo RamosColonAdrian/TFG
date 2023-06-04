@@ -120,7 +120,7 @@ const DepartamentDetails = (props: Props) => {
   if (!depart) return null;
 
   return (
-    <div className="max-w-4xl  bg-white p-16">
+    <div className="max-w-4xl mx-auto  bg-white p-16">
       <h1 className="text-2xl font-bold text-gray-900 mb-9">
         Department Details
       </h1>
