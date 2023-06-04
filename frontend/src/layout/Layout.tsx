@@ -1,13 +1,14 @@
 import React, { useContext } from "react";
 import { Link, useLocation, NavLink } from "react-router-dom";
 import { authContext } from "../contexts/authContext/authContext";
+import UserMenu from "../shared/components/UserMenu/UserMenu";
 
 type Props = {
   children: React.ReactNode;
 };
 
 const Layout = ({ children }: Props) => {
-  const { logout, authenticated } = useContext(authContext);
+  const { logout, authenticated, userInfo } = useContext(authContext);
   const { pathname } = useLocation();
   return (
     <div className="flex flex-col min-h-screen">
@@ -29,9 +30,8 @@ const Layout = ({ children }: Props) => {
               </li>
             </div>
             <li>
-              <button className="text-red-500" onClick={logout}>
-                Logout
-              </button>
+              <UserMenu user={userInfo}/>
+              
             </li>
           </ul>
         </nav>

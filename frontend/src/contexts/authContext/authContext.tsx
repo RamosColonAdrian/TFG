@@ -4,28 +4,30 @@ import { useEffect } from "react";
 import { RegisterDTO } from "../../App";
 import { useNavigate } from "react-router-dom";
 
+export type UserInfo = {
+  id: string;
+  dni: string;
+  name: string;
+  surname: string;
+  birthDate: string;
+  registerDate: string;
+  address: string;
+  email: string;
+  phone: string;
+  relativeName: string;
+  relativePhone: string;
+  role: string;
+  type: string;
+  picture: string;
+  departmentId: string;
+  updatedAt: string;
+  createdAt: string;
+};
+
 type AuthContextType = {
   loading: boolean;
   authenticated: boolean;
-  userInfo: {
-    id: string;
-    dni: string;
-    name: string;
-    surname: string;
-    birthDate: string;
-    registerDate: string;
-    address: string;
-    email: string;
-    phone: string;
-    relativeName: string;
-    relativePhone: string;
-    role: string;
-    type: string;
-    picture: string;
-    departmentId: string;
-    updatedAt: string;
-    createdAt: string;
-  };
+  userInfo: UserInfo;
   login: (email: string, password: string, token?: string) => Promise<void>;
   register: (dto: RegisterDTO) => Promise<void>;
   logout: () => void;
