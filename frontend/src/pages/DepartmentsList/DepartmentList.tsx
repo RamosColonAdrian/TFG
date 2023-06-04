@@ -12,7 +12,7 @@ const DepartamentList: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8007/departments-and-users")
+      .get("http://localhost:8007/department?withUsers=true")
       .then((response) => {
         setDepartments(response.data);
       });

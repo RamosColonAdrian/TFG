@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import prisma from "../db";
+import prisma from "../config/db";
 
 export default async function userExists(
   req: Request,

@@ -17,7 +17,7 @@ const AddDepartment = (props: Props) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8007/users");
+        const response = await axios.get("http://localhost:8007/user");
         setUsers(response.data);
       } catch (error) {
         toast.error("Error fetching users");

@@ -21,7 +21,7 @@ const UserList: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get("http://localhost:8007/users-departments")
+      .get("http://localhost:8007/user?withDepartments=true")
       .then((response) => {
         setLoadedUsers(response.data);
         setIsLoading(false);
@@ -41,7 +41,7 @@ const UserList: React.FC = () => {
   const handleDeleteUser = () => {
     const deleteUser = async () => {
       try {
-        await axios.delete(`http://localhost:8007/users/${selectedUserId}`);
+        await axios.delete(`http://localhost:8007/user/${selectedUserId}`);
         setLoadedUsers((prevUsers) =>
           prevUsers.filter((user) => user.id !== selectedUserId)
         );

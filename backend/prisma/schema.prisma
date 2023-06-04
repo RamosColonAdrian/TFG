@@ -27,9 +27,9 @@ model User {
   type              String?
   picture           String?
   departmentId      String?
-  UserToZone        UserToZone[]
+  UserToZone        UserToZone[] 
   UserToZoneAllowed UserToZone[] @relation("AllowedByUser")
-  Department        Department?  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  Department        Department?  @relation(fields: [departmentId], references: [id] )
   updatedAt         DateTime     @updatedAt
   createdAt         DateTime     @default(now())
   AccessLog         AccessLog[]

@@ -32,7 +32,7 @@ const ZoneDetails = (props: Props) => {
     const fetchZone = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8007/zones/${zoneId}`
+          `http://localhost:8007/zone/${zoneId}`
         );
         setZone(response.data);
       } catch (error) {
@@ -45,7 +45,7 @@ const ZoneDetails = (props: Props) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8007/users");
+        const response = await axios.get("http://localhost:8007/user");
         setUsers(response.data);
       } catch (error) {
         toast.error("Users not found");
@@ -88,7 +88,7 @@ const ZoneDetails = (props: Props) => {
 
     try {
       await axios
-        .put(`http://localhost:8007/zones/${zoneId}`, zoneExlude)
+        .put(`http://localhost:8007/zone/${zoneId}`, zoneExlude)
         .then(() => {
           toast.success("Zone updated successfully");
         });
@@ -104,7 +104,7 @@ const ZoneDetails = (props: Props) => {
     }
     const zoneId = zone?.id;
     axios
-      .post(`http://localhost:8007/add-user-to-zone`, {
+      .post(`http://localhost:8007/user-to-zone`, {
         zoneId,
         userId,
         allowedById: userInfo.id,

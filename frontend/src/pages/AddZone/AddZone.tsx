@@ -18,7 +18,7 @@ const AddZone = (props: Props) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8007/users");
+        const response = await axios.get("http://localhost:8007/user");
         setUsers(response.data);
       } catch (error) {
         toast.error("Error fetching users");
@@ -61,7 +61,7 @@ const AddZone = (props: Props) => {
   }
 
   async function createUserToZone() {
-    await axios.post("http://localhost:8007/add-zone-user-to-zone", {
+    await axios.post("http://localhost:8007/zone/with-users", {
       zone,
       selectedUsers,
     });

@@ -41,7 +41,7 @@ const DepartamentDetails = (props: Props) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8007/users");
+        const response = await axios.get("http://localhost:8007/user");
         setUsers(response.data);
       } catch (error) {
         toast.error("Error fetching department");
@@ -53,7 +53,7 @@ const DepartamentDetails = (props: Props) => {
   const handleDeleteUser = (userID: string) => {
     try {
       axios
-        .put(`http://localhost:8007/users/${userID}`, { departmentId: null })
+        .put(`http://localhost:8007/user/${userID}`, { departmentId: null })
         .then(() => {
           toast.success("User deleted successfully");
 
@@ -86,7 +86,7 @@ const DepartamentDetails = (props: Props) => {
             users.find((user) => user.id === selectedUser)!,
           ],
         });
-        axios.put(`http://localhost:8007/users/${selectedUser}`, {
+        axios.put(`http://localhost:8007/user/${selectedUser}`, {
           departmentId: depart.id,
         });
       }
