@@ -10,15 +10,17 @@ import time
 
 decoded_images = []
 image_names = []
+encoded_faces = []
 
 
+    
 def loadImages():
     decoded_images.clear()
     image_names.clear()
 
     start_time_stamp =  time.time()
 
-    cloudinary_resources = cloudinary.api.resources(type="upload", prefix="face_recognition")
+    cloudinary_resources = cloudinary.api.resources(type="upload", prefix="face_recognition", latest=True)
 
     cloudinary_images_data = []
 
@@ -33,9 +35,7 @@ def loadImages():
         cv2_decoded_image = cv2.imdecode(np.frombuffer(image_data[1], np.uint8), cv2.IMREAD_UNCHANGED)
         decoded_images.append(cv2_decoded_image)
         image_names.append(os.path.splitext(image_data[0])[0])
-
     print("Tiempo de ejecucion: ", time.time() - start_time_stamp, "segundos. ",len(cloudinary_resources['resources']) , " imagenes cargadas. " )
-
 
 def encodeFaces(images):
     encoded = []
@@ -48,8 +48,8 @@ def encodeFaces(images):
 def reloadModel():
     loadImages()
     print("Modelo recargado")
-    return encodeFaces(decoded_images)
-
+    global encoded_faces
+    encoded_faces = encodeFaces(decoded_images)
 
 def classifyFace(image): 
     numpy_img = np.frombuffer(image, np.uint8)
@@ -61,14 +61,17 @@ def classifyFace(image):
     face_encoded = fr.face_encodings(rgb_corrected_img, face)
     face_encoded_numpy_array = np.array(face_encoded)
 
-    for encoded_face in encoded_faces:
-        try:
-            comparison = fr.compare_faces([encoded_face], face_encoded_numpy_array)
-            if comparison[0] == True:
-                return image_names[encoded_faces.index(encoded_face)].split('/')[1]
-        except:
-            return 'Desconocido'
+    for i in range(len(encoded_faces)):
+            encoded_face = encoded_faces[i]
+            try:
+                comparison = fr.compare_faces([encoded_face], face_encoded_numpy_array)
+                print (comparison)
+                if comparison[0] == True:
+                    print ("Se encontro un match")
+                    print(image_names[i])
+                    return image_names[i].split('/')[1]
+            except Exception as e:
+                print(e)
     return 'Desconocido'
 
-
-encoded_faces = reloadModel()
+reloadModel()

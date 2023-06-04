@@ -127,6 +127,7 @@ app.post("/recognizer", multer.single("img"), async (req, res) => {
   });
 
   try {
+    
     const { data } = await axios.post(
       "http://localhost:8000/classify",
       formData,
@@ -136,6 +137,10 @@ app.post("/recognizer", multer.single("img"), async (req, res) => {
         },
       }
     );
+    
+    if (data === "Desconocido") {
+      return res.send({ message: data });  
+    }
 
     const userToZone = await prisma.userToZone.findFirst({
       where: {
@@ -165,8 +170,10 @@ app.post("/recognizer", multer.single("img"), async (req, res) => {
       },
     });
 
+
     res.status(200).json({ message: data });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -272,7 +279,7 @@ app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
     });
 
     const picture = result.secure_url;
-    
+
     console.log(picture);
     const user = await prisma.user.update({
       where: { id: userId },
