@@ -41,7 +41,7 @@ export const updateUserPhotoController = async (req: Request, res: Response) => 
       },
     });
 
-    await axios.post("http://localhost:8000/reload-model", {});
+    await axios.post(`${process.env.MODEL_URL}/reload-model`, {});
 
     res.status(200).json(user);
   } catch (error) {

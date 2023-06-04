@@ -16,7 +16,7 @@ export const recognizeFaceController = async (req: Request, res: Response) => {
 
   try {
     const { data } = await axios.post(
-      "http://localhost:8000/classify",
+      `${process.env.MODEL_URL}/classify`,
       formData,
       {
         headers: {
