@@ -8,28 +8,34 @@ import cloudinary.api
 import requests
 import time
 
-
-start_time_stamp =  time.time()
-
-cloudinary_resources = cloudinary.api.resources(type="upload", prefix="face_recognition")
-
-cloudinary_images_data = []
-
-for resource in cloudinary_resources['resources']:
-    url = resource['url']
-    filename = resource['public_id']
-    image_url = cloudinary.utils.cloudinary_url(url)[0]
-    image_data = requests.get(image_url).content
-    cloudinary_images_data.append([filename, image_data])
-
 decoded_images = []
 image_names = []
 
-for image_data in cloudinary_images_data:
-    cv2_decoded_image = cv2.imdecode(np.frombuffer(image_data[1], np.uint8), cv2.IMREAD_UNCHANGED)
-    decoded_images.append(cv2_decoded_image)
-    image_names.append(os.path.splitext(image_data[0])[0])
-    
+
+def loadImages():
+    decoded_images.clear()
+    image_names.clear()
+
+    start_time_stamp =  time.time()
+
+    cloudinary_resources = cloudinary.api.resources(type="upload", prefix="face_recognition")
+
+    cloudinary_images_data = []
+
+    for resource in cloudinary_resources['resources']:
+        url = resource['url']
+        filename = resource['public_id']
+        image_url = cloudinary.utils.cloudinary_url(url)[0]
+        image_data = requests.get(image_url).content
+        cloudinary_images_data.append([filename, image_data])
+
+    for image_data in cloudinary_images_data:
+        cv2_decoded_image = cv2.imdecode(np.frombuffer(image_data[1], np.uint8), cv2.IMREAD_UNCHANGED)
+        decoded_images.append(cv2_decoded_image)
+        image_names.append(os.path.splitext(image_data[0])[0])
+
+    print("Tiempo de ejecucion: ", time.time() - start_time_stamp, "segundos. ",len(cloudinary_resources['resources']) , " imagenes cargadas. " )
+
 
 def encodeFaces(images):
     encoded = []
@@ -39,9 +45,11 @@ def encodeFaces(images):
         encoded.append(encoded_img)
     return encoded
 
-encoded_faces = encodeFaces(decoded_images)
+def reloadModel():
+    loadImages()
+    print("Modelo recargado")
+    return encodeFaces(decoded_images)
 
-print("Tiempo de ejecucion: ", time.time() - start_time_stamp, "segundos. ",len(cloudinary_resources['resources']) , " imagenes cargadas. " )
 
 def classifyFace(image): 
     numpy_img = np.frombuffer(image, np.uint8)
@@ -62,3 +70,5 @@ def classifyFace(image):
             return 'Desconocido'
     return 'Desconocido'
 
+
+encoded_faces = reloadModel()

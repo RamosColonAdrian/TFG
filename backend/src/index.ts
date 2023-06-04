@@ -281,6 +281,8 @@ app.put("/user-photo/:id", multer.single("img"), async (req, res) => {
       },
     });
 
+    await axios.post("http://localhost:8000/reload-model", {});
+
     res.status(200).json(user);
   } catch (error) {
     console.error(error);

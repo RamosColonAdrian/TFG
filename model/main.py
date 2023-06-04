@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, Form
-from Model import classifyFace
+from Model import classifyFace, reloadModel
 import cloudinary_config
-from fastapi import File
+from fastapi import File, HTTPException
 
 app = FastAPI()
 
@@ -14,5 +14,11 @@ async def classify_controller(img: UploadFile = File(...)):
     contents = await img.read()
     res = classifyFace(contents)
     return res
+
+@app.post("/reload-model")
+async def reload_model():
+    reloadModel()
+    return "Modelo recargado"
+
     
 
