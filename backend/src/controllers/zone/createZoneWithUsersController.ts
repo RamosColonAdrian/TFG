@@ -2,7 +2,10 @@ import { Request, Response } from "express";
 import prisma from "../../config/db";
 import { v4 as generateUuid } from "uuid";
 
-export const createZoneWithUsersController = async (req: Request, res: Response) => {
+export const createZoneWithUsersController = async (
+  req: Request,
+  res: Response
+) => {
   const { selectedUsers, zone } = req.body;
   const id = generateUuid();
   const { name, description, location } = zone;

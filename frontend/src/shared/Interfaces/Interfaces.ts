@@ -43,7 +43,7 @@ export interface User {
   Department?: Department;
 }
 
-export interface AccessLog{
+export interface AccessLog {
   id: string;
   userId: string;
   zoneId: string;

@@ -6,7 +6,7 @@ import FormData from "form-data";
 
 export const recognizeFaceController = async (req: Request, res: Response) => {
   const img = req.file;
-  const { zoneId } = req.body as { zoneId: string; };
+  const { zoneId } = req.body as { zoneId: string };
 
   const formData = new FormData();
   formData.append("img", img?.buffer, {

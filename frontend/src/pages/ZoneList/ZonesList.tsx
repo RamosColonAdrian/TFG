@@ -17,7 +17,9 @@ const ZonesList: React.FC = () => {
   useEffect(() => {
     const fetchZonas = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/zone?withUsers=true`); // Ruta del endpoint para obtener las zonas con usuarios asignados
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/zone?withUsers=true`
+        ); // Ruta del endpoint para obtener las zonas con usuarios asignados
         setZonas(response.data);
       } catch (error) {
         toast.error("Error fetching zones");
@@ -29,7 +31,9 @@ const ZonesList: React.FC = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${import.meta.env.VITE_BASE_URL}/zone/${deleteZoneId}`);
+      await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/zone/${deleteZoneId}`
+      );
       setZonas((prevZonas) =>
         prevZonas.filter((zona) => zona.id !== deleteZoneId)
       );

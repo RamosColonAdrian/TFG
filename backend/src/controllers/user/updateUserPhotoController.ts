@@ -3,7 +3,10 @@ import prisma from "../../config/db";
 import cloudinary from "../../../cloudinary_config";
 import { Request, Response } from "express";
 
-export const updateUserPhotoController = async (req: Request, res: Response) => {
+export const updateUserPhotoController = async (
+  req: Request,
+  res: Response
+) => {
   const userId = req.params.id;
   const img = req.file;
 

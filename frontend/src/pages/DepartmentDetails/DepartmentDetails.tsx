@@ -41,7 +41,9 @@ const DepartamentDetails = (props: Props) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/user`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/user`
+        );
         setUsers(response.data);
       } catch (error) {
         toast.error("Error fetching department");
@@ -53,7 +55,9 @@ const DepartamentDetails = (props: Props) => {
   const handleDeleteUser = (userID: string) => {
     try {
       axios
-        .put(`${import.meta.env.VITE_BASE_URL}/user/${userID}`, { departmentId: null })
+        .put(`${import.meta.env.VITE_BASE_URL}/user/${userID}`, {
+          departmentId: null,
+        })
         .then(() => {
           toast.success("User deleted successfully");
 
@@ -107,7 +111,10 @@ const DepartamentDetails = (props: Props) => {
     };
 
     try {
-      await axios.put(`${import.meta.env.VITE_BASE_URL}/department/${depart.id}`, { department })
+      await axios
+        .put(`${import.meta.env.VITE_BASE_URL}/department/${depart.id}`, {
+          department,
+        })
         .then(() => {
           toast.success("Department updated successfully");
         });

@@ -7,7 +7,6 @@ export const deleteUserController = async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.delete({
       where: { id: userId },
-      
     });
     res.json(user);
   } catch (error) {

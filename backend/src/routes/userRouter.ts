@@ -10,8 +10,6 @@ const userRouter = Router();
 
 userRouter.get("/", getUsersController);
 
-
-
 userRouter.put("/photo/:id", multer.single("img"), updateUserPhotoController);
 
 userRouter.get("/:id", getUserController);
@@ -19,6 +17,5 @@ userRouter.get("/:id", getUserController);
 userRouter.put("/:id", updateUserController);
 
 userRouter.delete("/:id", deleteUserController);
-
 
 export default userRouter;

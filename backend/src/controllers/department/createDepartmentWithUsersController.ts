@@ -2,7 +2,10 @@ import prisma from "../../config/db";
 import { v4 as generateUuid } from "uuid";
 import { Request, Response } from "express";
 
-export const createDepartmentWithUsersController = async (req: Request, res: Response) => {
+export const createDepartmentWithUsersController = async (
+  req: Request,
+  res: Response
+) => {
   const { department, selectedUsers } = req.body;
 
   try {

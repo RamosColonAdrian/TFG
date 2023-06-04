@@ -5,4 +5,4 @@ const accessLogsRouter = Router();
 
 accessLogsRouter.get("/", getAccessLogsController);
 
-export default accessLogsRouter;    
+export default accessLogsRouter;

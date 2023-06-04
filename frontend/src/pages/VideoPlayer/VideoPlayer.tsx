@@ -7,9 +7,6 @@ import { toast } from "react-toastify";
 import clxs from "../../helpers/clxs";
 import { HiOutlineVideoCamera } from "react-icons/hi";
 
-
-
-
 const VideoPlayer = () => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
@@ -101,7 +98,9 @@ const VideoPlayer = () => {
   return (
     <div className="fixed top-0 left-0 w-screen h-screen flex flex-col bg-white bg-opacity-90">
       <div className="fixed top-10 left-10 z-10 flex items-center gap-2 group h-8">
-        <label className="" htmlFor="camera-dropdown"><HiOutlineVideoCamera size={"2em"}/></label>
+        <label className="" htmlFor="camera-dropdown">
+          <HiOutlineVideoCamera size={"2em"} />
+        </label>
         <select
           className="hidden group-hover:block border border-black rounded-md p-1"
           id="camera-dropdown"
@@ -125,8 +124,15 @@ const VideoPlayer = () => {
           height: 576,
         }}
       />
-      <button className={clxs("fixed top-10 right-10 border font-medium p-3 rounded-full", isCapturing ? "bg-red-500 border-red-500 text-white" : "border-black")}
-          onClick={onCapture}>Capturar</button>
+      <button
+        className={clxs(
+          "fixed top-10 right-10 border font-medium p-3 rounded-full",
+          isCapturing ? "bg-red-500 border-red-500 text-white" : "border-black"
+        )}
+        onClick={onCapture}
+      >
+        Capturar
+      </button>
     </div>
   );
 };

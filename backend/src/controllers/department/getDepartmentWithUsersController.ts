@@ -1,7 +1,10 @@
 import prisma from "../../config/db";
 import { Request, Response } from "express";
 
-export const getDepartmentWithUsersController = async (req: Request, res: Response) => {
+export const getDepartmentWithUsersController = async (
+  req: Request,
+  res: Response
+) => {
   const { id } = req.params;
 
   try {

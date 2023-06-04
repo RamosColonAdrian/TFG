@@ -12,12 +12,9 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@cloudinary/react": "^1.11.2",
-    "@cloudinary/url-gen": "^1.10.0",
     "@prisma/client": "^4.12.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.13",
-    "@types/date-fns": "^2.6.0",
     "@types/express": "^4.17.17",
     "@types/morgan": "^1.9.4",
     "@types/multer": "^1.4.7",
@@ -25,25 +22,18 @@
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.37.0",
-    "cloudinary-react": "^1.8.1",
     "cors": "^2.8.5",
-    "date-fns": "^2.30.0",
-    "date-fns-tz": "^2.0.0",
-    "debounce": "^1.2.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "filepond": "^4.30.4",
+    "form-data": "^4.0.0",
     "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^2.0.22",
-    "p-debounce": "^4.0.0",
     "prisma": "^4.12.0",
-    "react-dropzone": "^14.2.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.3",
-    "uuid": "^9.0.0",
-    "winston": "^3.8.2"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.2"

@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import prisma from "../../config/db";
 
-export const deleteUserToZoneController = async (req: Request, res: Response) => {
+export const deleteUserToZoneController = async (
+  req: Request,
+  res: Response
+) => {
   const { id } = req.params;
   try {
     await prisma.userToZone.delete({

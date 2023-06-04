@@ -6,12 +6,10 @@ import { deleteUserToZoneController } from "../controllers/userToZone/deleteUser
 
 const userToZoneRouter = Router();
 
-
 userToZoneRouter.post("/", createUseerToZoneController);
 
 userToZoneRouter.get("/:userId", getUserToZoneController);
 
 userToZoneRouter.delete("/:id", deleteUserToZoneController);
 
-
-export default userToZoneRouter;    
+export default userToZoneRouter;

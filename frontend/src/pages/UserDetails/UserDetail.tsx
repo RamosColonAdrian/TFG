@@ -9,7 +9,6 @@ import { authContext } from "../../contexts/authContext/authContext";
 import { FileUploader } from "react-drag-drop-files";
 import DeleteModal from "../../shared/components/DeleteModal/DeleteModal";
 
-
 type Props = {};
 
 const UserDetail = (props: Props) => {
@@ -29,7 +28,7 @@ const UserDetail = (props: Props) => {
     setZoneToDeleteId(zoneId);
   };
 
-  const handleChange = (file : File) => {
+  const handleChange = (file: File) => {
     setFile(file);
 
     const formData = new FormData();
@@ -37,11 +36,16 @@ const UserDetail = (props: Props) => {
     formData.append("id", userId as string);
 
     toast.promise(
-      axios.put(`${import.meta.env.VITE_BASE_URL}/user/photo/${userId}`, formData), {
-      pending: "Uploading photo...",
-      success: "Photo updated",
-      error: "Error updating photo",
-    })
+      axios.put(
+        `${import.meta.env.VITE_BASE_URL}/user/photo/${userId}`,
+        formData
+      ),
+      {
+        pending: "Uploading photo...",
+        success: "Photo updated",
+        error: "Error updating photo",
+      }
+    );
   };
 
   useRedirectBasedOnAuthentication("authenticated");
@@ -146,7 +150,9 @@ const UserDetail = (props: Props) => {
       .delete(`${import.meta.env.VITE_BASE_URL}/user-to-zone/${zoneToDeleteId}`)
       .then((response) => {
         setAllowedZones(
-          allowedZones.filter((zone) => zone.UserToZone[0].id !== zoneToDeleteId)
+          allowedZones.filter(
+            (zone) => zone.UserToZone[0].id !== zoneToDeleteId
+          )
         );
         toast.success("Zone deleted successfully");
         setIsDeleteModalOpen(false);
@@ -156,16 +162,24 @@ const UserDetail = (props: Props) => {
       });
   };
 
-
-
   return (
     <div className="max-w-4xl mx-auto  bg-white p-16">
       <h1 className="text-2xl font-bold text-gray-900 mb-9">User Details</h1>
       <div className="flex flex-col items-center mb-7">
-        <img className="w-56 mb-3 rounded-full h-56 object-cover" src={file ? URL.createObjectURL(file) : user.picture} alt="Profile Image" />
-        <FileUploader label="" multiple={false} handleChange={handleChange} maxFileCount={1} name="file" types={["JPG", "PNG"]} />
+        <img
+          className="w-56 mb-3 rounded-full h-56 object-cover"
+          src={file ? URL.createObjectURL(file) : user.picture}
+          alt="Profile Image"
+        />
+        <FileUploader
+          label=""
+          multiple={false}
+          handleChange={handleChange}
+          maxFileCount={1}
+          name="file"
+          types={["JPG", "PNG"]}
+        />
       </div>
-      
 
       <form onSubmit={handleSubmit}>
         <div className="grid gap-6 mb-6 lg:grid-cols-2 w-full">
@@ -390,7 +404,6 @@ const UserDetail = (props: Props) => {
                         onClick={() => openDeleteModal(zone.UserToZone[0].id)}
                         className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
                       >
-                        
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -427,9 +440,7 @@ const UserDetail = (props: Props) => {
                       </Link>
                       <DeleteModal
                         isOpen={isDeleteModalOpen}
-                        onRequestClose={() => 
-                          setIsDeleteModalOpen(false)
-                        }
+                        onRequestClose={() => setIsDeleteModalOpen(false)}
                         onDelete={() => {
                           handleDeleteZone();
                         }}

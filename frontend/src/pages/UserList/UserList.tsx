@@ -41,7 +41,9 @@ const UserList: React.FC = () => {
   const handleDeleteUser = () => {
     const deleteUser = async () => {
       try {
-        await axios.delete(`${import.meta.env.VITE_BASE_URL}/user/${selectedUserId}`);
+        await axios.delete(
+          `${import.meta.env.VITE_BASE_URL}/user/${selectedUserId}`
+        );
         setLoadedUsers((prevUsers) =>
           prevUsers.filter((user) => user.id !== selectedUserId)
         );
@@ -85,7 +87,9 @@ const UserList: React.FC = () => {
                       <div className="font-medium text-gray-700">
                         {user.name} {user.surname}
                       </div>
-                      <div className="text-start text-gray-400">{user.email}</div>
+                      <div className="text-start text-gray-400">
+                        {user.email}
+                      </div>
                     </div>
                   </th>
                   <td className="py-3 px-6 text-center">
@@ -95,7 +99,6 @@ const UserList: React.FC = () => {
                       </div>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-semibold text-red-600">
-                        
                         Without phone
                       </span>
                     )}
@@ -179,7 +182,6 @@ const UserList: React.FC = () => {
         </div>
       </div>
     </div>
-
   );
 };
 

@@ -11,7 +11,8 @@ export const registerController = async (req: Request, res: Response) => {
     surname: string;
   };
 
-  const picture = "https://res.cloudinary.com/dqrqizfkt/image/upload/v1685816526/default/default_user.png";
+  const picture =
+    "https://res.cloudinary.com/dqrqizfkt/image/upload/v1685816526/default/default_user.png";
 
   const hashedPassword = await hash(password, 10);
 

@@ -48,7 +48,7 @@ export default function AuthContextProvider({
     {} as AuthContextType["userInfo"]
   );
   const navigate = useNavigate();
-    
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -63,8 +63,6 @@ export default function AuthContextProvider({
   }, []);
 
   const login = async (email: string, password: string, token?: string) => {
-
-
     const { data } = await axios.post(
       `${import.meta.env.VITE_BASE_URL}/auth/login`,
       { email, password },

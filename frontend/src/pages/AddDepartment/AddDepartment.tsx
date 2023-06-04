@@ -17,7 +17,9 @@ const AddDepartment = (props: Props) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/user`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/user`
+        );
         setUsers(response.data);
       } catch (error) {
         toast.error("Error fetching users");

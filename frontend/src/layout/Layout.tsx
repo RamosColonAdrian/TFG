@@ -17,21 +17,48 @@ const Layout = ({ children }: Props) => {
           <ul className="flex p-2 justify-between">
             <div className="flex gap-3">
               <li>
-                <NavLink to="/users" className={({isActive})=>isActive && "text-indigo-600" || "hover:text-indigo-600"}>Users</NavLink>
+                <NavLink
+                  to="/users"
+                  className={({ isActive }) =>
+                    (isActive && "text-indigo-600") || "hover:text-indigo-600"
+                  }
+                >
+                  Users
+                </NavLink>
               </li>
               <li>
-                <NavLink to="/zones" className={({ isActive }) => isActive && "text-indigo-600" || "hover:text-indigo-600"}>Zones</NavLink>
+                <NavLink
+                  to="/zones"
+                  className={({ isActive }) =>
+                    (isActive && "text-indigo-600") || "hover:text-indigo-600"
+                  }
+                >
+                  Zones
+                </NavLink>
               </li>
               <li>
-                <NavLink to="/departments" className={({isActive})=>isActive && "text-indigo-600" || "hover:text-indigo-600"}>Departments</NavLink>
+                <NavLink
+                  to="/departments"
+                  className={({ isActive }) =>
+                    (isActive && "text-indigo-600") || "hover:text-indigo-600"
+                  }
+                >
+                  Departments
+                </NavLink>
               </li>
               <li>
-                <NavLink to="/access" className={({ isActive }) => isActive && "text-indigo-600" || "hover:text-indigo-600"}>Access Logs</NavLink>
+                <NavLink
+                  to="/access"
+                  className={({ isActive }) =>
+                    (isActive && "text-indigo-600") || "hover:text-indigo-600"
+                  }
+                >
+                  Access Logs
+                </NavLink>
               </li>
             </div>
             <li>
-              <UserMenu user={userInfo}/>
-              
+              <UserMenu user={userInfo} />
             </li>
           </ul>
         </nav>
