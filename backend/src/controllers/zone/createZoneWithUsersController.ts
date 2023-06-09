@@ -6,7 +6,7 @@ export const createZoneWithUsersController = async (
   req: Request,
   res: Response
 ) => {
-  const { selectedUsers, zone } = req.body;
+  const { selectedUsers, zone, allowedBy } = req.body;
   const id = generateUuid();
   const { name, description, location } = zone;
   try {
@@ -20,14 +20,14 @@ export const createZoneWithUsersController = async (
         updatedAt: new Date(),
       },
     });
-    //todo: cambiar el id del usuario allowed by
+    
     for (const user of selectedUsers) {
       await prisma.userToZone.create({
         data: {
           id: generateUuid(),
           userId: user,
           zoneId: id,
-          allowedBy: "b3cdfd1f-9eaa-4766-ad9a-68319422f73c",
+          allowedBy,
         },
       });
     }

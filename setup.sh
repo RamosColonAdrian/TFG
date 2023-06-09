@@ -1,0 +1,1 @@
+cd frontend && docker build -t project/frontend . && cd ../backend && docker build -t project/backend . && cd ../model && docker build -t project/model . 

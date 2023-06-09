@@ -1,13 +1,15 @@
 import axios from "axios";
 import { User, Zone } from "../../shared/Interfaces/Interfaces";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuthentication";
+import { authContext } from "../../contexts/authContext/authContext";
 
 type Props = {};
 
 const AddZone = (props: Props) => {
+  const { userInfo } = useContext(authContext);
   const [users, setUsers] = useState<User[]>([]);
   const [zone, setZone] = useState<Zone>(null!);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -66,6 +68,7 @@ const AddZone = (props: Props) => {
     await axios.post(`${import.meta.env.VITE_BASE_URL}/zone/with-users`, {
       zone,
       selectedUsers,
+      allowedBy: userInfo.id,
     });
   }
 
