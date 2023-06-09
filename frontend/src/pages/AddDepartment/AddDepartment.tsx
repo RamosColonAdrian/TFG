@@ -54,7 +54,7 @@ const AddDepartment = (props: Props) => {
 
   return (
     <div className="max-w-4xl mx-auto  bg-white p-16">
-      <h1 className="text-2xl font-bold text-gray-900 mb-9">New Zone</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-9">New Department</h1>
 
       <form onSubmit={handleSubmit}>
         <div className="grid gap-6 mb-6 lg:grid-cols-2 w-full">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { FiInfo } from "react-icons/fi";
 import { RiDeleteBinLine } from "react-icons/ri";
@@ -8,13 +8,14 @@ import Modal from "react-modal";
 import DeleteModal from "../../shared/components/DeleteModal/DeleteModal";
 import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuthentication";
 import { toast } from "react-toastify";
+import { authContext } from "../../contexts/authContext/authContext";
 
-//TODO: BORRADO EN CASCADA DE USUARIOS, ERROR AL BORRAR UN USUARIO QUE ESTA ASIGNADO A UNA ZONA
 
 const UserList: React.FC = () => {
   const [loadedUsers, setLoadedUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const { userInfo } = useContext(authContext);
 
   useRedirectBasedOnAuthentication("authenticated");
 
@@ -61,7 +62,7 @@ const UserList: React.FC = () => {
         <div className="bg-white shadow-md rounded my-6">
           <table className="min-w-max w-full table-auto">
             <thead>
-              <tr className="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
+              <tr className="bg-orange-400 bg-opacity-70 text-gray-700 uppercase text-sm leading-normal">
                 <th className="py-3 px-6 text-left">Name</th>
                 <th className="py-3 px-6 text-center ">Phone</th>
                 <th className="py-3 px-6 text-center">Departament</th>
@@ -81,7 +82,11 @@ const UserList: React.FC = () => {
                         className="h-full w-full rounded-full object-cover object-center"
                         src={user.picture}
                       />
-                      <span className="absolute right-0 bottom-0 h-2 w-2 rounded-full bg-green-400 ring ring-white"></span>
+                      {
+                        userInfo.id === user.id 
+                        ? <span className="absolute right-0 bottom-0 h-2 w-2 rounded-full bg-green-400 ring ring-white"></span>
+                        : ""
+                      }
                     </div>
                     <div className="text-sm text-left">
                       <div className="font-medium text-gray-700">
@@ -132,9 +137,9 @@ const UserList: React.FC = () => {
                       {/* Agregada la clase "justify-center" */}
                       <Link
                         to={`/user/${user.id}`}
-                        className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                        className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110"
                       >
-                        <div className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
+                        <div className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -152,7 +157,7 @@ const UserList: React.FC = () => {
                       </Link>
                       <div
                         onClick={() => setSelectedUserId(user.id)}
-                        className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                        className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

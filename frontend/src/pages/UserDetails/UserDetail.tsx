@@ -356,13 +356,13 @@ const UserDetail = (props: Props) => {
 
               <button
                 type="button"
-                className="group rounded h-10 w-32 bg-blue-400 text-base text-white relative overflow-hidden mr-5"
+                className="group rounded h-10 w-32 bg-orange-500 text-base text-white relative overflow-hidden mr-5"
                 onClick={() =>
                   addUserToZone(selectedZone as string, userId as string)
                 }
               >
                 Add Zone
-                <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-xl"></div>
+                <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded"></div>
               </button>
             </div>
           </div>
@@ -402,7 +402,7 @@ const UserDetail = (props: Props) => {
                     <div className="flex items-center justify-center space-x-2">
                       <div
                         onClick={() => openDeleteModal(zone.UserToZone[0].id)}
-                        className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                        className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -420,21 +420,12 @@ const UserDetail = (props: Props) => {
                       </div>
                       <Link
                         to={`/zone/${zone.id}`}
-                        className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                        className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110"
                       >
-                        <div className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                            />
+                        <div className="w-4 transform hover:text-orange-500 hover:scale-110">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
                         </div>
                       </Link>

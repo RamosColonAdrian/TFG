@@ -7,7 +7,7 @@ import VideoPlayer from "../../pages/VideoPlayer/VideoPlayer";
 import UserList from "../../pages/UserList/UserList";
 import UserDetail from "../../pages/UserDetails/UserDetail";
 import ZonesList from "../../pages/ZoneList/ZonesList";
-import ZoneDetails from "../../pages/ZoneDatails/ZoneDetails";
+import ZoneDetails from "../../pages/ZoneDetails/ZoneDetails";
 import AddZone from "../../pages/AddZone/AddZone";
 import DepartamentList from "../../pages/DepartmentsList/DepartmentList";
 import AddDepartment from "../../pages/AddDepartment/AddDepartment";

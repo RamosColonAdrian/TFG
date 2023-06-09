@@ -42,7 +42,7 @@ const VideoPlayer = () => {
 
         try {
           const { data } = await axios.post(
-            `${import.meta.env.VITE_BASE_URL}/recognizer`,
+            `${import.meta.env.VITE_BASE_URL}/`,
             formData,
             {
               headers: {
@@ -125,13 +125,33 @@ const VideoPlayer = () => {
         }}
       />
       <button
-        className={clxs(
-          "fixed top-10 right-10 border font-medium p-3 rounded-full",
-          isCapturing ? "bg-red-500 border-red-500 text-white" : "border-black"
+        className={clxs("flex justify-center items-center gap-3 fixed top-10 right-10 border-2 font-medium p-4 rounded-full",
+        isCapturing
+          ? "bg-red-200 text-red-600 border-red-500"
+        : "bg-gray-200 border-gray-400 text-gray-600 font-medium"
         )}
         onClick={onCapture}
       >
-        Capturar
+        
+        
+        {isCapturing 
+          ? <div className="flex justify-center items-center gap-3">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              </span>
+              <p>Recording...</p>
+            </div>
+          : <div className="flex justify-center items-center gap-3">
+              <span className="relative flex h-3 w-3">
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              </span>
+              <p>Record</p>
+          </div>
+
+        }
+
+        
       </button>
     </div>
   );

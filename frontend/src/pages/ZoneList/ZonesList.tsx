@@ -51,7 +51,7 @@ const ZonesList: React.FC = () => {
           <div className="w-full lg:w-5/6">
             <Link to={"/zone/add"}>
               <div className="flex justify-end">
-                <button className="group rounded h-9 w-36 bg-blue-500 font-bold text-base text-white relative overflow-hidden">
+                <button className="group rounded h-9 w-36 bg-orange-500  font-bold text-base text-white relative overflow-hidden">
                   Add Zone
                   <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded"></div>
                 </button>
@@ -60,7 +60,7 @@ const ZonesList: React.FC = () => {
             <div className="bg-white shadow-md rounded my-6">
               <table className="min-w-max w-full table-auto">
                 <thead>
-                  <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <tr className="bg-orange-400 bg-opacity-70 text-gray-700 uppercase text-sm leading-normal">
                     <th className="py-3 px-6 text-center">Zone</th>
                     <th className="py-3 px-6 text-center">Location</th>
                     <th className="py-3 px-6 text-center">Description</th>
@@ -124,9 +124,9 @@ const ZonesList: React.FC = () => {
                         <div className="flex item-center justify-center">
                           <Link
                             to={`/zone/${zona.id}`}
-                            className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                            className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110"
                           >
-                            <div className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
+                            <div className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
@@ -143,7 +143,7 @@ const ZonesList: React.FC = () => {
                             </div>
                           </Link>
                           <div
-                            className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                            className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110"
                             onClick={() => {
                               setDeleteModalOpen(true);
                               setDeleteZoneId(zona.id);

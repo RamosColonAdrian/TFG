@@ -172,11 +172,10 @@ const ZoneDetails = (props: Props) => {
             </label>
             <textarea
               id="description"
-              className={`bg-gray-50 border ${
-                isMaxLengthReached
+              className={`bg-gray-50 border ${isMaxLengthReached
                   ? "border-yellow-500 bg-yellow-50 "
                   : "border-gray-300"
-              } text-gray-900 text-sm rounded-lg  block w-full p-2.5`}
+                } text-gray-900 text-sm rounded-lg  block w-full p-2.5`}
               value={zone.description}
               onChange={(e) => {
                 const value = e.target.value;
@@ -205,7 +204,7 @@ const ZoneDetails = (props: Props) => {
       <div className="mt-4 border-b border-gray-300 my-6"></div>
       <div className="flex items-center justify-between mb-10">
         <button
-          className="group rounded h-10 w-32 bg-blue-400 text-base text-white relative overflow-hidden mr-5"
+          className="group rounded h-10 w-32 bg-orange-500 text-base text-white relative overflow-hidden mr-5"
           onClick={() => {
             if (selectedUser) {
               addUsersToZone(selectedUser);
@@ -213,7 +212,7 @@ const ZoneDetails = (props: Props) => {
           }}
         >
           Add User
-          <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-xl"></div>
+          <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded"></div>
         </button>
 
         <select
@@ -271,12 +270,11 @@ const ZoneDetails = (props: Props) => {
 
                   <td className="py-3 px-6 text-center">
                     <div className="flex items-center justify-center space-x-2">
-                      {" "}
-                      {/* Agregada la clase "justify-center" */}
                       <div
                         onClick={() => openDeleteModal(userToZone.id)}
-                        className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                        className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110"
                       >
+
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -293,23 +291,20 @@ const ZoneDetails = (props: Props) => {
                       </div>
                       <Link
                         to={`/user/${userToZone.User.id}`}
-                        className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
+                        className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110"
                       >
-                        <div className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                            />
+                          <div className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110">
+                            <div className="w-4 transform hover:text-orange-500 hover:scale-110">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
                         </div>
+                            <div className="w-4 transform hover:text-orange-500 hover:scale-110">
+                            
+                            </div>
+
+                          </div>
                       </Link>
                       <DeleteModal
                         isOpen={isDeleteModalOpen}
@@ -330,13 +325,17 @@ const ZoneDetails = (props: Props) => {
           <p className="text-gray-600 text-sm font-light">No users allowed</p>
         </div>
       )}
-
       <Link
         to={`/video/${zone.id}`}
-        className="text-blue-500 hover:text-blue-600"
+        className="text-red-600 mt-10 flex flex-row items-center justify-center gap-3 bg-red-300 w-60 h-10 rounded hover:bg-opacity-80"
       >
+        <span className="relative flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+        </span>
         Start recording access
       </Link>
+
     </div>
   );
 };
