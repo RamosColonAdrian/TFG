@@ -88,7 +88,7 @@ const Register: React.FC<RegisterProps> = () => {
         backgroundImage: `url(${background})`,
       }}
     >
-      <div className="container  h-full flex flex-1 justify-center items-center">
+      <div className="h-full flex flex-1 justify-center items-center">
         <div className="w-full max-w-lg flex flex-col items-stretch">
           <form
             onSubmit={handleSubmit}

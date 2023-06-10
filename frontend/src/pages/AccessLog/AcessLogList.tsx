@@ -38,12 +38,14 @@ const AccessLogList: React.FC = () => {
     const wb = utils.book_new();
     utils.book_append_sheet(wb, ws, "Access Logs");
 
+    const csvData = utils.sheet_to_csv(wb.Sheets["Access Logs"])
+
     // Genera el nombre del archivo con la fecha actual en el formato "dia-mes-año"
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = String(today.getFullYear());
-    const fileName = `access_logs_${day}-${month}-${year}.xlsx`;
+    const fileName = `access_logs_${day}-${month}-${year}.csv`;
 
     // Guarda el archivo de Excel
     writeFile(wb, fileName);

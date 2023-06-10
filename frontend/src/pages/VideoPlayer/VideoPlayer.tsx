@@ -29,7 +29,7 @@ const VideoPlayer = () => {
   };
 
   useEffect(() => {
-    let captureInterval: number | null = null;
+    let captureInterval: NodeJS.Timeout | null = null;
     if (isCapturing) {
       captureInterval = setInterval(async () => {
         const imageSrc = webcamRef.current?.getScreenshot();
@@ -74,7 +74,7 @@ const VideoPlayer = () => {
   }, [isCapturing]);
 
   useEffect(() => {
-    let timeOut: number;
+    let timeOut: NodeJS.Timeout;
 
     if (!isCapturing) return;
     (async () => {

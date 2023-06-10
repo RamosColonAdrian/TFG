@@ -163,7 +163,7 @@ const UserDetail = (props: Props) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto  bg-white p-16">
+    <div className="max-w-4xl mx-auto mt-10 bg-white p-16">
       <h1 className="text-2xl font-bold text-gray-900 mb-9">User Details</h1>
       <div className="flex flex-col items-center mb-7">
         <img

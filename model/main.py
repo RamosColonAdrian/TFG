@@ -1,7 +1,6 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, File
 from model import classifyFace, reloadModel
 import cloudinary_config
-from fastapi import File
 
 app = FastAPI()
 
