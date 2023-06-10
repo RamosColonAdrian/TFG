@@ -2,11 +2,8 @@ import { Fragment, useContext } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import {
   ChevronDownIcon,
-  PhoneIcon,
-  PlayCircleIcon,
 } from "@heroicons/react/20/solid";
 import {
-  ChartPieIcon,
   UserIcon,
   ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";

@@ -1,11 +1,7 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import { v4 as generateUuid } from "uuid";
-import prisma from "./config/db";
 import "dotenv/config";
-import axios from "axios";
-import cloudinary from "../cloudinary_config";
 import authRouter from "./routes/authRouter";
 import recognizerRouter from "./routes/recognizserRouter";
 import userRouter from "./routes/userRouter";

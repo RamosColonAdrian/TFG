@@ -1,8 +1,5 @@
-import e, { Router } from "express";
-import checkThatEmailIsNotAlreadyRegistered from "../middlewares/checkThatEmailIsNotAlreadyRegistered";
-import { compare, hash } from "bcryptjs";
-import { User } from "@prisma/client";
-import { sign, verify } from "jsonwebtoken";
+import { Router } from "express";
+
 import { getAllDepartmentsController } from "../controllers/department/getAllDepartmentsController";
 import { createDepartmentWithUsersController } from "../controllers/department/createDepartmentWithUsersController";
 import { getDepartmentWithUsersController } from "../controllers/department/getDepartmentWithUsersController";

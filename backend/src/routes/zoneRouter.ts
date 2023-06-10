@@ -1,7 +1,4 @@
 import { Router } from "express";
-import multer from "../config/multer";
-import axios from "axios";
-import cloudinary from "../../cloudinary_config";
 import { getZonesController } from "../controllers/zone/getZonesController";
 import { deleteZoneController } from "../controllers/zone/deleteZoneController";
 import { updateZoneController } from "../controllers/zone/updateZoneController";
