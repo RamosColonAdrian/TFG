@@ -2,6 +2,8 @@
 
 ## Description
 
+This repository contains the TFG of the superior degree of development of multiplatform applications. This project implements a user management and access control application through facial recognition.
+
 ## Use
 
 ### Installation
