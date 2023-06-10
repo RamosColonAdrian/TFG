@@ -10,6 +10,7 @@ export const updateUserPhotoController = async (
   const userId = req.params.id;
   const img = req.file;
 
+
   if (!img) {
     return res.status(400).json({ error: "No se proporcionó ninguna imagen" });
   }

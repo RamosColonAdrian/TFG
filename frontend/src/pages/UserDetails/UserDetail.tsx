@@ -22,6 +22,8 @@ const UserDetail = (props: Props) => {
   const { userInfo } = useContext(authContext);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [zoneToDeleteId, setZoneToDeleteId] = useState<string>();
+  
+  useRedirectBasedOnAuthentication("authenticated");
 
   const openDeleteModal = (zoneId: string) => {
     setIsDeleteModalOpen(true);
@@ -48,7 +50,6 @@ const UserDetail = (props: Props) => {
     );
   };
 
-  useRedirectBasedOnAuthentication("authenticated");
 
   useEffect(() => {
     axios
