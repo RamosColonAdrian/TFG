@@ -1,6 +1,6 @@
 describe("template spec", () => {
   it("passes", () => {
-    cy.visit("http://localhost:5173");
+    cy.visit("http://localhost:4173");
     cy.get(".inline-block").click();
     cy.get("#name").type("Adrian");
     cy.get("#lastName").type("Ramos");
