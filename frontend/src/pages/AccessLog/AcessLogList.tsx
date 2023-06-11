@@ -5,7 +5,8 @@ import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuth
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { writeFile, utils } from "xlsx";
- 
+import csv from "../../assets/csv.png";
+
 const AccessLogList: React.FC = () => {
   const [accessLogs, setAccessLogs] = useState<AccessLog[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -193,7 +194,7 @@ const AccessLogList: React.FC = () => {
           <button className="group rounded-xl h-11 w-28 bg-green-700 font-bold text-base text-white relative overflow-hidden" onClick={handleExportToExcel}>
           <div className="flex items-center justify-center gap-3">
             <div className="rounded-full bg-white p-1">
-              <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" alt="Excel" className="w-5" />
+                <img src={csv} alt="Excel" className="w-5" />
             </div>
             <span>Export</span>
           </div>

@@ -10,6 +10,7 @@ import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuth
 import { authContext } from "../../contexts/authContext/authContext";
 
 type Props = {};
+//todo despues de eliminar el modal me vuelve a salir cuando añado un user
 
 const ZoneDetails = (props: Props) => {
   const { zoneId } = useParams();
