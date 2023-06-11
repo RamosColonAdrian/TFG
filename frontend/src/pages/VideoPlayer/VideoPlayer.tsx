@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import clxs from "../../helpers/clxs";
 import { HiOutlineVideoCamera } from "react-icons/hi";
+import { is } from "date-fns/locale";
 
 const VideoPlayer = () => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -13,7 +14,6 @@ const VideoPlayer = () => {
   const webcamRef = useRef<Webcam>(null);
   const [isCapturing, setIsCapturing] = useState<Boolean>(false);
   const { zoneId } = useParams();
-  const [isLastCapture, setIsLastCapture] = useState(false);
 
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((mediaDevices) => {
@@ -31,8 +31,8 @@ const VideoPlayer = () => {
 
   useEffect(() => {
     let captureInterval: NodeJS.Timeout | null = null;
-    if (isCapturing) {
-      captureInterval = setInterval(async () => {
+    if (isCapturing ) {
+      captureInterval = setInterval(async () => { 
         const imageSrc = webcamRef.current?.getScreenshot();
         if (!imageSrc) return;
 
@@ -40,6 +40,8 @@ const VideoPlayer = () => {
         const formData = new FormData();
         formData.append("img", imageFile);
         formData.append("zoneId", zoneId as string);
+
+        console.log(isCapturing);
 
         try {
           const { data } = await axios.post(
@@ -52,22 +54,22 @@ const VideoPlayer = () => {
             }
           );
           if (data.message !== "Desconocido") {
-            toast.success(`Welcome ${data.message}`);
             setIsCapturing(false);
-            setIsLastCapture(true);
+            toast.success(`Welcome ${data.message}`);
+            
           }
         } catch (error) {
           setIsCapturing(false);
           if ((error as AxiosError).response?.status === 401) {
             toast.warning("Not authorized");
+            return;
           } else {
             toast.error("Unknown error");
+            return;
           }
         }
       }, 500);
-    } else {
-      if (captureInterval) clearInterval(captureInterval);
-    }
+    } 
 
     // Cleanup function to clear the interval
     return () => {
@@ -94,12 +96,7 @@ const VideoPlayer = () => {
     };
   }, [isCapturing]);
 
-  useEffect(() => {
-    if (isLastCapture) {
-      setIsLastCapture(false);
-      setIsCapturing(false);
-    }
-  }, [isLastCapture]);
+  
 
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDeviceId(event.target.value);

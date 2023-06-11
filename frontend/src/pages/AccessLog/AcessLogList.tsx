@@ -24,7 +24,7 @@ const AccessLogList: React.FC = () => {
         : log.User.email,
       log.User.phone === null || log.User.email === ""
         ? "No Data"
-        : log.User.email, 
+        : log.User.email,
       log.Zone.name,
       log.access ? "Allowed" : "Denied",
       formatDate(log.createdAt),
@@ -33,7 +33,7 @@ const AccessLogList: React.FC = () => {
 
     // Crea una nueva hoja de cálculo de Excel
     const ws = utils.aoa_to_sheet([
-      ["User name","Email","Phone", "Zone", "Access", "Created At", "Updated At"],
+      ["User name", "Email", "Phone", "Zone", "Access", "Created At", "Updated At"],
       ...data,
     ]);
     const wb = utils.book_new();
@@ -93,8 +93,8 @@ const AccessLogList: React.FC = () => {
 
   return (
     <div className="min-w-screen min-h-screen flex items-center justify-center bg-gray-100 font-sans overflow-hidden">
-      
-      <div className="w-full lg:w-5/6">
+
+      <div className="mt-32 w-full lg:w-5/6">
         <label
           htmlFor="name"
           className="block mb-2 font-medium text-gray-900 "
@@ -109,20 +109,26 @@ const AccessLogList: React.FC = () => {
           placeholder="Search by user name"
           className="bg-orange-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5"
         />
-        <div className="bg-white shadow-md rounded my-6">
-          <table className="min-w-max w-full table-auto">
+        <div className="bg-white shadow-md rounded my-6 max-h-96 overflow-y-auto">
+          <table className="min-w-max w-full table-fixed">
             <thead>
-              <tr className="bg-orange-400 bg-opacity-70 text-gray-700 uppercase text-sm leading-normal">
-                <th className="py-3 px-6 text-center">User name</th>
-                <th className="py-3 px-6 text-center">Zone</th>
-                <th className="py-3 px-6 text-center">Access</th>
-                <th className="py-3 px-6 text-center" onClick={() => handleSort("createdAt")}>
+              <tr className=" text-gray-700 uppercase text-sm leading-normal">
+                <th className="py-3 px-6 text-center sticky top-0 z-10 bg-orange-400">User name</th>
+                <th className="py-3 px-6 text-center sticky top-0 z-10 bg-orange-400">Zone</th>
+                <th className="py-3 px-6 text-center sticky top-0 z-10 bg-orange-400">Access</th>
+                <th
+                  className="py-3 px-6 text-center sticky top-0 z-10 bg-orange-400 cursor-pointer"
+                  onClick={() => handleSort("createdAt")}
+                >
                   Created At{" "}
                   {sortBy === "createdAt" && (
                     <span>{sortDirection === "asc" ? "▲" : "▼"}</span>
                   )}
                 </th>
-                <th className="py-3 px-6 text-center" onClick={() => handleSort("updatedAt")}>
+                <th
+                  className="py-3 px-6 text-center sticky top-0 z-10 bg-orange-400 cursor-pointer"
+                  onClick={() => handleSort("updatedAt")}
+                >
                   Updated At{" "}
                   {sortBy === "updatedAt" && (
                     <span>{sortDirection === "asc" ? "▲" : "▼"}</span>
@@ -163,16 +169,16 @@ const AccessLogList: React.FC = () => {
                   </td>
                   <td className={`py-3 px-6 text-center `}>
                     <span className="font-medium">
-                      {log.access 
-                        ? 
-                          <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600">
-                            Allowed
-                          </span>
-                        : 
-                          <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-semibold text-red-600">
-                            Denied
-                          </span>
-                        }
+                      {log.access
+                        ?
+                        <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600">
+                          Allowed
+                        </span>
+                        :
+                        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-semibold text-red-600">
+                          Denied
+                        </span>
+                      }
                     </span>
                   </td>
                   <td className="py-3 px-6 text-center">
@@ -190,20 +196,21 @@ const AccessLogList: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <div className="flex justify-end"> 
-          <button className="group rounded-xl h-11 w-28 bg-green-700 font-bold text-base text-white relative overflow-hidden" onClick={handleExportToExcel}>
-          <div className="flex items-center justify-center gap-3">
-            <div className="rounded-full bg-white p-1">
+        <div className="flex justify-end">
+          <button className="mb-10 group rounded-xl h-11 w-28 bg-green-700 font-bold text-base text-white relative overflow-hidden" onClick={handleExportToExcel}>
+            <div className="flex items-center justify-center gap-3">
+              <div className="rounded-full bg-white p-1">
                 <img src={csv} alt="Excel" className="w-5" />
+              </div>
+              <span>Export</span>
             </div>
-            <span>Export</span>
-          </div>
-          <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-xl"></div>
+            <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-xl"></div>
 
-        </button></div>
-       
+          </button>
+        </div>
+
       </div>
-      
+
     </div>
   );
 };
