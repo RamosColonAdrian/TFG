@@ -5,9 +5,8 @@ import { FiKey } from "react-icons/fi";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { AiOutlineUser } from "react-icons/ai";
 import { toast } from "react-toastify";
-import { RegisterDTO } from "../../App";
 import { authContext } from "../../contexts/authContext/authContext";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuthentication";
 
 interface RegisterProps {}
@@ -15,6 +14,7 @@ interface RegisterProps {}
 const Register: React.FC<RegisterProps> = () => {
   const { register } = useContext(authContext);
 
+  const navigate = useNavigate();
   useRedirectBasedOnAuthentication("unauthenticated");
 
   const [passwordsNotMatchingError, setPasswordsNotMatchingError] =
@@ -39,19 +39,27 @@ const Register: React.FC<RegisterProps> = () => {
       toast.error("Passwords don't match");
       return;
     }
-    await toast.promise(
-      register({
-        email: formState.email,
-        password: formState.password,
-        name: formState.name,
-        surname: formState.lastName,
-      }),
-      {
-        pending: "Register in process...",
-        success: "Register success!",
-        error: "Register failed",
+    try{
+      await toast.promise(
+        register({
+          email: formState.email,
+          password: formState.password,
+          name: formState.name,
+          surname: formState.lastName,
+        }),
+        {
+          pending: "Register in process...",
+          success: "Register success!",
+        }
+      );
+    }catch(err: any){
+      if (err.response.data === "Email already registered") {
+        toast.error("Email already exists");
+        navigate("/login");
       }
-    );
+    }
+
+    
   };
 
   useEffect(() => {

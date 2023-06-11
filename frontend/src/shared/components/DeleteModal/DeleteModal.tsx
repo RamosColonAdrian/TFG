@@ -5,6 +5,7 @@ interface DeleteModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   onDelete: () => void;
+  
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
@@ -12,6 +13,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   onRequestClose,
   onDelete,
 }) => {
+
   return (
     <Modal
       isOpen={isOpen}
@@ -23,7 +25,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       <div className="bg-white p-6 rounded shadow">
         <h1 className="text-xl font-bold mb-4">Confirm Delete</h1>
         <p className="text-gray-600 mb-6">
-          Are you sure you want to delete the user?
+          Are you sure you want to delete this item?
         </p>
         <button
           onClick={onDelete}

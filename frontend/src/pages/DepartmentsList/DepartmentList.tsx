@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Department, Zone } from "../../shared/Interfaces/Interfaces";
+import { Department } from "../../shared/Interfaces/Interfaces";
 import { FaUserSlash } from "react-icons/fa";
 import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuthentication";
+import { toast } from "react-toastify";
+import DeleteModal from "../../shared/components/DeleteModal/DeleteModal";
 
-//TODO add delete department
 const DepartamentList: React.FC = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteZoneId, setDeleteZoneId] = useState<string>("");
 
   useRedirectBasedOnAuthentication("authenticated");
 
@@ -18,6 +21,21 @@ const DepartamentList: React.FC = () => {
         setDepartments(response.data);
       });
   }, []);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/department/${deleteZoneId}`
+      );
+      setDepartments((prevDepartments) =>
+        prevDepartments.filter((depart) => depart.id !== deleteZoneId)
+      );
+      setDeleteModalOpen(false);
+      toast.success("Department deleted successfully");
+    } catch (error) {
+      toast.error("Error deleting department");
+    }
+  };
 
   return (
     <div>
@@ -117,7 +135,12 @@ const DepartamentList: React.FC = () => {
                             </div>
                           </Link>
                           
-                          <div className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110">
+                          <div className="w-4 mr-2 transform hover:text-orange-500 hover:scale-110" onClick={()=>{
+                            setDeleteModalOpen(true);
+                            setDeleteZoneId(depart.id);
+                            }}
+                          >
+                            
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
@@ -141,6 +164,11 @@ const DepartamentList: React.FC = () => {
             </div>
           </div>
         </div>
+        <DeleteModal
+          isOpen={deleteModalOpen}
+          onRequestClose={() => setDeleteModalOpen(false)}
+          onDelete={handleDelete}
+        />
       </div>
     </div>
   );

@@ -1,21 +1,21 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { FiInfo } from "react-icons/fi";
-import { RiDeleteBinLine } from "react-icons/ri";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { User } from "../../shared/Interfaces/Interfaces";
 import Modal from "react-modal";
 import DeleteModal from "../../shared/components/DeleteModal/DeleteModal";
 import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuthentication";
 import { toast } from "react-toastify";
 import { authContext } from "../../contexts/authContext/authContext";
+  
 
 
 const UserList: React.FC = () => {
   const [loadedUsers, setLoadedUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const { userInfo } = useContext(authContext);
+  const { userInfo, logout } = useContext(authContext);
+
 
   useRedirectBasedOnAuthentication("authenticated");
 
@@ -41,6 +41,10 @@ const UserList: React.FC = () => {
 
   const handleDeleteUser = () => {
     const deleteUser = async () => {
+      if (userInfo.id === selectedUserId) {
+        toast.info("You have deleted yourself. Logging out...");
+        logout();        
+      }
       try {
         await axios.delete(
           `${import.meta.env.VITE_BASE_URL}/user/${selectedUserId}`
@@ -173,6 +177,7 @@ const UserList: React.FC = () => {
                           />
                         </svg>
                       </div>
+                      
                       <DeleteModal
                         isOpen={Boolean(selectedUserId)}
                         onRequestClose={() => setSelectedUserId(null)}

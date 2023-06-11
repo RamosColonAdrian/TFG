@@ -25,6 +25,7 @@ export const recognizeFaceController = async (req: Request, res: Response) => {
       }
     );
 
+
     if (data === "Desconocido") {
       return res.send({ message: data });
     }

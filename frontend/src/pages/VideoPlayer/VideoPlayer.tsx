@@ -13,6 +13,7 @@ const VideoPlayer = () => {
   const webcamRef = useRef<Webcam>(null);
   const [isCapturing, setIsCapturing] = useState<Boolean>(false);
   const { zoneId } = useParams();
+  const [isLastCapture, setIsLastCapture] = useState(false);
 
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((mediaDevices) => {
@@ -53,6 +54,7 @@ const VideoPlayer = () => {
           if (data.message !== "Desconocido") {
             toast.success(`Welcome ${data.message}`);
             setIsCapturing(false);
+            setIsLastCapture(true);
           }
         } catch (error) {
           setIsCapturing(false);
@@ -86,10 +88,18 @@ const VideoPlayer = () => {
         }, 5000);
       });
     })();
+
     return () => {
       if (timeOut) clearTimeout(timeOut);
     };
   }, [isCapturing]);
+
+  useEffect(() => {
+    if (isLastCapture) {
+      setIsLastCapture(false);
+      setIsCapturing(false);
+    }
+  }, [isLastCapture]);
 
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDeviceId(event.target.value);
