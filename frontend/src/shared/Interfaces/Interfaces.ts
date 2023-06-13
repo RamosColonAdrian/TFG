@@ -1,3 +1,4 @@
+// Definicion de interfaces para el frontend
 export interface UserToZone {
   id: string;
   allowedBy: string;

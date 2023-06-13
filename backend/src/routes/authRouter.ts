@@ -1,3 +1,4 @@
+// Ruta para el controlador de registro de usuarios
 import { Router } from "express";
 import checkThatEmailIsNotAlreadyRegistered from "../middlewares/checkThatEmailIsNotAlreadyRegistered";
 import { registerController } from "../controllers/auth/registerController";

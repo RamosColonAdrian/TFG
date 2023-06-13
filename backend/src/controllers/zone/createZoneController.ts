@@ -1,3 +1,4 @@
+// Controlador que crea una zona en la base de datos
 import { Request, Response } from "express";
 import prisma from "../../config/db";
 import { v4 as generateUuid } from "uuid";

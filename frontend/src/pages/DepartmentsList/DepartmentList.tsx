@@ -1,3 +1,4 @@
+// Pagina que renderiza la lista de departamentos
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -12,8 +13,10 @@ const DepartamentList: React.FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteZoneId, setDeleteZoneId] = useState<string>("");
 
+  // Redirecciona a la página de usuarios si no se está autenticado
   useRedirectBasedOnAuthentication("authenticated");
 
+  // Obtiene los departamentos de la API
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_BASE_URL}/department?withUsers=true`)
@@ -22,14 +25,18 @@ const DepartamentList: React.FC = () => {
       });
   }, []);
 
+  // Función que se ejecuta cuando se hace click en el botón de eliminar departamento
   const handleDelete = async () => {
     try {
+      // Se realiza la petición al backend para eliminar el departamento de la base de datos
       await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/department/${deleteZoneId}`
       );
+      // Se actualiza el estado de los departamentos
       setDepartments((prevDepartments) =>
         prevDepartments.filter((depart) => depart.id !== deleteZoneId)
       );
+      // Se cierra el modal
       setDeleteModalOpen(false);
       toast.success("Department deleted successfully");
     } catch (error) {

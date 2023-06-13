@@ -1,3 +1,4 @@
+// Controlador que actualiza una zona de la base de datos
 import { Request, Response } from "express";
 import prisma from "../../config/db";
 

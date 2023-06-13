@@ -1,3 +1,4 @@
+//Menu de usuario que se muestra en la barra de navegación
 import { Fragment, useContext } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import {

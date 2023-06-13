@@ -1,3 +1,4 @@
+// Pagina que se renderiza cuando se quiere agregar un departamento
 import axios from "axios";
 import { Department, User, Zone } from "../../shared/Interfaces/Interfaces";
 import { useState, useEffect } from "react";
@@ -12,8 +13,11 @@ const AddDepartment = (props: Props) => {
   const [department, setDepartment] = useState<Department>(null!);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const navigate = useNavigate();
+
+  // Redirecciona a la página de usuarios si no se está autenticado
   useRedirectBasedOnAuthentication("authenticated");
 
+  // Obtiene los usuarios de la API 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -28,14 +32,17 @@ const AddDepartment = (props: Props) => {
     fetchUsers();
   }, []);
 
+  // Obtiene un usuario por su id 
   function getUser(id: string) {
     const user = users.find((user) => user.id === id);
     return user?.name;
   }
 
+  // Funcion que se ejecuta cuando se hace submit en el formulario 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      // Se realiza la petición al backend para agregar el departamento
       await axios.post(`${import.meta.env.VITE_BASE_URL}/department`, {
         department,
         selectedUsers,
@@ -48,6 +55,7 @@ const AddDepartment = (props: Props) => {
     navigate("/departments");
   };
 
+  // Función que se ejecuta cuando se selecciona un usuario para eliminarlo de la lista de usuarios seleccionados
   function handlerDeleteUser(userId: string) {
     setSelectedUsers(selectedUsers.filter((user) => user !== userId));
   }

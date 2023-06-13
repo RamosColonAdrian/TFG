@@ -1,3 +1,4 @@
+// Ruatas para el controlador de usuarios
 import { Router } from "express";
 import multer from "../config/multer";
 import { getUsersController } from "../controllers/user/getUsersController";

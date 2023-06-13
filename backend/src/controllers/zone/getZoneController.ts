@@ -1,3 +1,4 @@
+//Controlador que obtiene una zona con sus usuarios
 import { Request, Response } from "express";
 import prisma from "../../config/db";
 

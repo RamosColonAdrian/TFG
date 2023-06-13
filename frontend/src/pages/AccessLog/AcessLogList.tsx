@@ -1,3 +1,4 @@
+// Pagina donde se listan los logs de acceso de los usuarios
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AccessLog } from "../../shared/Interfaces/Interfaces";
@@ -15,6 +16,7 @@ const AccessLogList: React.FC = () => {
 
   useRedirectBasedOnAuthentication("authenticated");
 
+  // Funcion para crear un archivo csv con los logs de acceso
   const handleExportToExcel = () => {
     // Crea una matriz de datos que contendrá los datos de la tabla
     const data = accessLogs.map((log) => [
@@ -52,6 +54,7 @@ const AccessLogList: React.FC = () => {
     writeFile(wb, fileName);
   };
 
+  // Función para ordenar los logs de acceso por una columna específica
   const handleSort = (column: string) => {
     if (column === sortBy) {
       // Si ya se está ordenando por la misma columna, cambia la dirección
@@ -67,8 +70,9 @@ const AccessLogList: React.FC = () => {
 
   useEffect(() => {
     fetchAccessLogs();
-  }, [searchTerm, sortBy, sortDirection]); // Agrega sortBy y sortDirection como dependencias
+  }, [searchTerm, sortBy, sortDirection]); 
 
+  // Función para obtener los logs de acceso de la API 
   const fetchAccessLogs = async () => {
     try {
       const response = await axios.get(
@@ -76,8 +80,8 @@ const AccessLogList: React.FC = () => {
         {
           params: {
             username: searchTerm,
-            sortBy: sortBy || undefined, // Asegúrate de pasar undefined si sortBy es falsy
-            sortDirection: sortDirection || undefined, // Asegúrate de pasar undefined si sortDirection es falsy
+            sortBy: sortBy || undefined, 
+            sortDirection: sortDirection || undefined, 
           },
         }
       );
@@ -87,6 +91,7 @@ const AccessLogList: React.FC = () => {
     }
   };
 
+  // Función para formatear la fecha
   const formatDate = (date: string) => {
     return new Date(date).toLocaleString(); // Formatea la fecha utilizando toLocaleString()
   };

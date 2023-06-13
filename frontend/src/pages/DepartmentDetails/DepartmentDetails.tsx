@@ -1,8 +1,8 @@
+// Pagina que renderiza los datos de un departamento y permite su modificación
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Department, User, Zone } from "../../shared/Interfaces/Interfaces";
 import { Link, useParams } from "react-router-dom";
-import { format } from "date-fns";
 import { toast } from "react-toastify";
 import DeleteModal from "../../shared/components/DeleteModal/DeleteModal";
 import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuthentication";
@@ -17,13 +17,16 @@ const DepartamentDetails = (props: Props) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDeleteId, setUserToDeleteId] = useState("");
 
+  // Redirecciona a la página de usuarios si no se está autenticado
   useRedirectBasedOnAuthentication("authenticated");
 
+  // Funcion que establece el usuario seleccionado para abrir el modal de confirmación de eliminación de usuario
   const openDeleteModal = (userId: string) => {
     setIsDeleteModalOpen(true);
     setUserToDeleteId(userId);
   };
 
+  // Obtiene las zonas de la API 
   useEffect(() => {
     const fetchZone = async () => {
       try {
@@ -38,6 +41,7 @@ const DepartamentDetails = (props: Props) => {
     fetchZone();
   }, [departId]);
 
+  // Obtiene los usuarios de la API
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -52,8 +56,10 @@ const DepartamentDetails = (props: Props) => {
     fetchUsers();
   }, []);
 
+  // Funcion que se ejecuta cuando se selecciona un usuario del departamento
   const handleDeleteUser = (userID: string) => {
     try {
+      // Se realiza la petición al backend para eliminar el usuario del departamento
       axios
         .put(`${import.meta.env.VITE_BASE_URL}/user/${userID}`, {
           departmentId: null,
@@ -63,6 +69,7 @@ const DepartamentDetails = (props: Props) => {
 
           if (!depart) return;
 
+          // Se actualiza el estado del departamento para que se refleje el cambio
           setDepart({
             ...depart,
             User: depart?.User?.filter((user) => user.id !== userID),
@@ -74,15 +81,17 @@ const DepartamentDetails = (props: Props) => {
     } catch (error) {
       toast.error("Error deleting user");
     }
-
     setIsDeleteModalOpen(false);
   };
 
+  // Funcion que se ejecuta cuando se selecciona un usuario para añadir al departamento
   function addNewUser(depart: Department) {
+    // Si hay un usuario seleccionado y el usuario no está ya en el departamento, se añade el usuario al departamento
     if (selectedUser) {
       if (depart.User.find((user) => user.id === selectedUser)) {
         toast.error("User already added to this department");
       } else {
+        // Se añade el usuario al departamento y se realiza la petición al backend para actualizar el usuario
         setDepart({
           ...depart,
           User: [
@@ -90,6 +99,7 @@ const DepartamentDetails = (props: Props) => {
             users.find((user) => user.id === selectedUser)!,
           ],
         });
+        // Se realiza la petición al backend para actualizar el usuario
         axios.put(`${import.meta.env.VITE_BASE_URL}/user/${selectedUser}`, {
           departmentId: depart.id,
         });
@@ -97,6 +107,7 @@ const DepartamentDetails = (props: Props) => {
     }
   }
 
+  // Funcion que se ejecuta cuando se selecciona un usuario para eliminar del departamento
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -111,6 +122,7 @@ const DepartamentDetails = (props: Props) => {
     };
 
     try {
+      // Se realiza la petición al backend para actualizar el departamento
       await axios
         .put(`${import.meta.env.VITE_BASE_URL}/department/${depart.id}`, {
           department,

@@ -1,3 +1,4 @@
+// Pagina de login de la aplicación 
 import { useState, useContext } from "react";
 import Input from "../../shared/components/Input/Input";
 
@@ -25,12 +26,16 @@ const Login: React.FC<LoginProps> = () => {
     password: "",
   });
 
+  // Se obtiene la función de login del contexto de autenticación
   const { login } = useContext(authContext);
 
+  // Se redirecciona a la página de usuarios si se está autenticado
   useRedirectBasedOnAuthentication("unauthenticated");
 
+  // Función que se ejecuta cuando se hace submit en el formulario
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Se hace login con los datos del formulario y se muestra un toast dependiendo del resultado
     await toast.promise(login(formState.email, formState.password), {
       pending: "Login in process...",
       success: "Login success!",

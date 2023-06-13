@@ -1,11 +1,12 @@
+// Rutas para el controlador de usuarios a zonas
 import { Router } from "express";
-import { createUseerToZoneController } from "../controllers/userToZone/createUseerToZoneController";
+import { createUserToZoneController } from "../controllers/userToZone/createUserToZoneController";
 import { getUserToZoneController } from "../controllers/userToZone/getUserToZoneController";
 import { deleteUserToZoneController } from "../controllers/userToZone/deleteUserToZoneController";
 
 const userToZoneRouter = Router();
 
-userToZoneRouter.post("/", createUseerToZoneController);
+userToZoneRouter.post("/", createUserToZoneController);
 
 userToZoneRouter.get("/:userId", getUserToZoneController);
 

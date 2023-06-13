@@ -1,3 +1,4 @@
+// Ruta para el controlador de reconocimiento facial
 import { Router } from "express";
 import multer from "../config/multer";
 import { recognizeFaceController } from "../controllers/recognizer/recognizeFaceController";

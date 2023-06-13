@@ -1,3 +1,4 @@
+// Input generico para reutilizar en cualquier formulario
 import React from "react";
 
 interface InputProps {

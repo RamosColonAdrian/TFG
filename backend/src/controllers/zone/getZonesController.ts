@@ -1,3 +1,4 @@
+// Controlador que obtiene todas las zonas de la base de datos
 import { Request, Response } from "express";
 import prisma from "../../config/db";
 

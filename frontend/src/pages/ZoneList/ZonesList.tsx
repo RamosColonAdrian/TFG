@@ -1,3 +1,4 @@
+//Pagina que renderiza la lista de zonas
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -12,8 +13,10 @@ const ZonesList: React.FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteZoneId, setDeleteZoneId] = useState<string>("");
 
+  // Redirecciona a la página de usuarios si no se está autenticado
   useRedirectBasedOnAuthentication("authenticated");
 
+  // Obtiene las zonas de la API y las guarda en el estado
   useEffect(() => {
     const fetchZonas = async () => {
       try {
@@ -29,6 +32,7 @@ const ZonesList: React.FC = () => {
     fetchZonas();
   }, []);
 
+  // Modal para confirmar el borrado de una zona
   const handleDelete = async () => {
     try {
       await axios.delete(

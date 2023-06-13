@@ -1,3 +1,4 @@
+// Controlador que elimina un departamento de la base de datos
 import prisma from "../../config/db";
 import { Request, Response } from "express";
 

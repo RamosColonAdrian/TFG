@@ -1,3 +1,4 @@
+// Pagina que renderiza la camara web para reconocer rostros
 import axios, { AxiosError } from "axios";
 import React, { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
@@ -15,6 +16,7 @@ const VideoPlayer = () => {
   const [isCapturing, setIsCapturing] = useState<Boolean>(false);
   const { zoneId } = useParams();
 
+  // Obtiene los dispositivos de video disponibles
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((mediaDevices) => {
       const videoDevices = mediaDevices.filter(
@@ -25,25 +27,30 @@ const VideoPlayer = () => {
     });
   }, []);
 
+  // Funcion que se ejecuta cuando se hace click en el boton de capturar 
   const onCapture = () => {
     setIsCapturing((prev) => !prev);
   };
 
+  // Efecto que se ejecuta cuando se cambia el estado de captura de video
   useEffect(() => {
     let captureInterval: NodeJS.Timeout | null = null;
+    // Si se está capturando, se ejecuta un intervalo que hace una peticion a la API cada 500ms
     if (isCapturing ) {
       captureInterval = setInterval(async () => { 
+        // Se obtiene la imagen de la camara
         const imageSrc = webcamRef.current?.getScreenshot();
         if (!imageSrc) return;
 
+        // Se convierte la imagen a un archivo
         const imageFile = dataURLtoFile(imageSrc, "image.png");
         const formData = new FormData();
+        // Se añade el archivo y el id de la zona a la peticion
         formData.append("img", imageFile);
         formData.append("zoneId", zoneId as string);
 
-        console.log(isCapturing);
-
         try {
+          // Se hace la peticion a la API para reconocer el rostro
           const { data } = await axios.post(
             `${import.meta.env.VITE_BASE_URL}/recognizer`,
             formData,
@@ -53,12 +60,14 @@ const VideoPlayer = () => {
               },
             }
           );
+          // Si el usuario es reconocido, se muestra un mensaje de bienvenida
           if (data.message !== "Desconocido") {
             setIsCapturing(false);
             toast.success(`Welcome ${data.message}`);
             
           }
         } catch (error) {
+          // Si ocurre un error, se muestra un mensaje de error
           setIsCapturing(false);
           if ((error as AxiosError).response?.status === 401) {
             toast.warning("Not authorized");
@@ -71,17 +80,20 @@ const VideoPlayer = () => {
       }, 500);
     } 
 
-    // Cleanup function to clear the interval
+    // Cleanup function que se ejecuta cuando se desmonta el componente
     return () => {
       if (captureInterval) clearInterval(captureInterval);
     };
   }, [isCapturing]);
 
+  // Efecto que se ejecuta cuando se cambia el estado de captura de video
   useEffect(() => {
     let timeOut: NodeJS.Timeout;
 
+    // Si se está capturando, se ejecuta un timeout de 5 segundos
     if (!isCapturing) return;
     (async () => {
+      // Si el usuario no es reconocido en 5 segundos, se muestra un mensaje de error
       await new Promise((res) => {
         timeOut = setTimeout(() => {
           setIsCapturing(false);
@@ -97,7 +109,7 @@ const VideoPlayer = () => {
   }, [isCapturing]);
 
   
-
+  // Funcion que se ejecuta cuando se cambia el dispositivo de video
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDeviceId(event.target.value);
   };

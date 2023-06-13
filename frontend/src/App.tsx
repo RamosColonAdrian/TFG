@@ -1,3 +1,4 @@
+// Punto de entrada de la aplicación 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuthContextProvider from "./contexts/authContext/authContext";
@@ -12,6 +13,7 @@ export type RegisterDTO = {
   surname: string;
 };
 
+// Componente principal de la aplicación 
 function App() {
   return (
     <BrowserRouter>

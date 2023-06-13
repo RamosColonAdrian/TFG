@@ -1,26 +1,33 @@
+// Test para el controlador de login de la aplicación
 import { compare } from "bcryptjs";
 import prisma from "../../config/db";
 import { User } from "@prisma/client";
 import { loginController } from "./loginController";
 
+// Mockear bcryptjs
 jest.mock("bcryptjs", () => ({
   compare: jest.fn(),
 }));
 
+// Mockear prisma
 jest.mock("../../config/db", () => ({
   user: {
     findUnique: jest.fn(),
   },
 }));
 
+
+// Mockear jsonwebtoken
 jest.mock("jsonwebtoken", () => ({
   sign: jest.fn(() => "testToken"),
   verify: jest.fn(),
 }));
 
+
 describe("Given login controller", () => {
   describe("When it is called with valid credentials", () => {
     test("should return a 200 status and user data with token", async () => {
+      
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),

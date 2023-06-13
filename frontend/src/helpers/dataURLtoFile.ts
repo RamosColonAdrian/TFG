@@ -1,3 +1,4 @@
+// Funcion que convierte un dataURL a un archivo de tipo File
 export default function dataURLtoFile(dataurl: string, filename: string) {
   var arr = dataurl.split(","),
     mime = arr[0].match(/:(.*?);/)![1],

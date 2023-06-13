@@ -1,3 +1,4 @@
+// Archivo que contiene el contexto de autenticación de la aplicación 
 import { useContext } from "react";
 import { Routes, Route } from "react-router-dom";
 import Login from "../../pages/Login/Login";

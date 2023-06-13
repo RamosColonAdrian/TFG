@@ -1,3 +1,4 @@
+// Pagina que renderiza los detalles de un usuario 
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
@@ -23,20 +24,25 @@ const UserDetail = (props: Props) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [zoneToDeleteId, setZoneToDeleteId] = useState<string>();
   
+  // Redirecciona a la página de usuarios si no se está autenticado
   useRedirectBasedOnAuthentication("authenticated");
 
+  // Funcion que se encarga de controlar el modal de confirmacion de eliminacion de zona
   const openDeleteModal = (zoneId: string) => {
     setIsDeleteModalOpen(true);
     setZoneToDeleteId(zoneId);
   };
 
+  // Funcion que controla los cambios en el input de la foto de perfil
   const handleChange = (file: File) => {
     setFile(file);
 
+    // Crea un formData con la imagen y el id del usuario
     const formData = new FormData();
     formData.append("img", file as Blob);
     formData.append("id", userId as string);
 
+    // Hace un put a la API para actualizar la foto de perfil
     toast.promise(
       axios.put(
         `${import.meta.env.VITE_BASE_URL}/user/photo/${userId}`,
@@ -51,7 +57,9 @@ const UserDetail = (props: Props) => {
   };
 
 
+  // Efecto que se ejecuta cuando se monta el componente y cuando cambia el id del usuario para obtener los datos del usuario
   useEffect(() => {
+    // Obtiene el usuario por su id
     axios
       .get(`${import.meta.env.VITE_BASE_URL}/user/${userId}`)
       .then((response) => {
@@ -62,6 +70,7 @@ const UserDetail = (props: Props) => {
       });
   }, [userId]);
 
+  // Efecto que se ejecuta cuando se monta el componente para obtener los departamentos 
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_BASE_URL}/department`)
@@ -73,6 +82,7 @@ const UserDetail = (props: Props) => {
       });
   }, []);
 
+  // Efecto que se ejecuta cuando se monta el componente para obtener las zonas 
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_BASE_URL}/zone`)
@@ -85,6 +95,7 @@ const UserDetail = (props: Props) => {
       });
   }, []);
 
+  // Efecto que se ejecuta cuando se monta el componente para obtener las zonas permitidas del usuario 
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_BASE_URL}/user-to-zone/${userId}`)
@@ -96,12 +107,14 @@ const UserDetail = (props: Props) => {
       });
   }, []);
 
+  // Funcion que se encarga de añaadir una zona al usuario 
   function addUserToZone(zoneId: string, userId: string) {
     if (allowedZones.find((zone) => zone.id === zoneId)) {
       toast.error("User already in zone");
       return;
     }
 
+    // Hace un post a la API para añadir la zona al usuario 
     axios
       .post(`${import.meta.env.VITE_BASE_URL}/user-to-zone`, {
         zoneId,
@@ -109,6 +122,7 @@ const UserDetail = (props: Props) => {
         allowedById: userInfo.id,
       })
       .then((response) => {
+        // Añade la zona a la lista de zonas permitidas
         setAllowedZones([...allowedZones, response.data]);
         toast.success("Zone added successfully");
       })

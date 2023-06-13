@@ -1,3 +1,4 @@
+//Pagina que renderiza los detalles de una zona
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { User, Zone } from "../../shared/Interfaces/Interfaces";
@@ -10,7 +11,6 @@ import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuth
 import { authContext } from "../../contexts/authContext/authContext";
 
 type Props = {};
-//todo despues de eliminar el modal me vuelve a salir cuando añado un user
 
 const ZoneDetails = (props: Props) => {
   const { zoneId } = useParams();
@@ -22,13 +22,16 @@ const ZoneDetails = (props: Props) => {
   const [userToDeleteId, setUserToDeleteId] = useState("");
   const { userInfo } = useContext(authContext);
 
+  // Redirecciona a la página de usuarios si no se está autenticado
   useRedirectBasedOnAuthentication("authenticated");
 
+  // Funcion que controla el modal de confirmación de borrado 
   const openDeleteModal = (userId: string) => {
     setIsDeleteModalOpen(true);
     setUserToDeleteId(userId);
   };
 
+  // Obtiene los usuarios de la API de las zonas
   useEffect(() => {
     const fetchZone = async () => {
       try {
@@ -43,6 +46,7 @@ const ZoneDetails = (props: Props) => {
     fetchZone();
   }, [zoneId]);
 
+  // Obtiene los usuarios de la API de las zonas
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -57,14 +61,18 @@ const ZoneDetails = (props: Props) => {
     fetchUsers();
   }, []);
 
+  // Funcion que realiza el borrado de un usuario de una zona
   const handleDelete = async (userToZoneId: string) => {
     try {
       await axios
         .delete(`${import.meta.env.VITE_BASE_URL}/user-to-zone/${userToZoneId}`)
         .then(() => {
+          // Si se borra correctamente, se muestra un toast y se actualiza la lista de usuarios de la zona
           toast.success("User removed from zone");
           zone?.UserToZone.some((userToZone, index) => {
+            // Si el id del usuario a borrar coincide con el id del usuario de la zona, se borra de la lista
             if (userToZone.id === userToZoneId) {
+              // Se elimina el usuario de la lista
               zone.UserToZone.splice(index, 1);
               setZone({ ...zone });
               return true;
@@ -77,6 +85,7 @@ const ZoneDetails = (props: Props) => {
     }
   };
 
+  // Funcion que realiza el borrado de una zona
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -98,7 +107,9 @@ const ZoneDetails = (props: Props) => {
     }
   };
 
+  // Funcion que añade un usuario a una zona
   function addUsersToZone(userId: string) {
+    // Comprueba si el usuario ya está añadido a la zona
     if (zone?.UserToZone.some((userToZone) => userToZone.User.id === userId)) {
       toast.error("User already added to the zone");
       return;

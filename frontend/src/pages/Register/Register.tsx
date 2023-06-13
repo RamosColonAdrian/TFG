@@ -1,3 +1,4 @@
+// Pagina donde se registran los usuarios nuevos
 import React, { useState, useEffect, useContext } from "react";
 import Input from "../../shared/components/Input/Input";
 import background from "../../assets/login-new.jpeg";
@@ -12,9 +13,11 @@ import useRedirectBasedOnAuthentication from "../../hooks/useRedirectBasedOnAuth
 interface RegisterProps {}
 
 const Register: React.FC<RegisterProps> = () => {
+  // Se obtiene la función de registro del contexto de autenticación
   const { register } = useContext(authContext);
-
   const navigate = useNavigate();
+
+  // Se redirecciona a la página de usuarios si se está autenticado
   useRedirectBasedOnAuthentication("unauthenticated");
 
   const [passwordsNotMatchingError, setPasswordsNotMatchingError] =
@@ -33,13 +36,17 @@ const Register: React.FC<RegisterProps> = () => {
     confirmPassword: "",
   });
 
+  // Función que se ejecuta cuando se hace submit en el formulario
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Si las contraseñas no coinciden se muestra un toast y se retorna
     if (passwordsNotMatchingError) {
       toast.error("Passwords don't match");
       return;
     }
-    try{
+    try
+    {
+      // Se hace registro con los datos del formulario y se muestra un toast dependiendo del resultado
       await toast.promise(
         register({
           email: formState.email,
@@ -62,6 +69,7 @@ const Register: React.FC<RegisterProps> = () => {
     
   };
 
+  // Se comprueba si las contraseñas coinciden
   useEffect(() => {
     if (!formState.password || !formState.confirmPassword) {
       setPasswordsNotMatchingError(false);
@@ -75,6 +83,7 @@ const Register: React.FC<RegisterProps> = () => {
     setPasswordsNotMatchingError(false);
   }, [formState.password, formState.confirmPassword]);
 
+  // Función que se ejecuta cuando se cambia el valor de un input del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormState({
       ...formState,
@@ -82,6 +91,7 @@ const Register: React.FC<RegisterProps> = () => {
     });
   };
 
+  // Se comprueba si algún campo del formulario está vacío
   const isAnyFieldEmpty =
     !formState.name ||
     !formState.lastName ||

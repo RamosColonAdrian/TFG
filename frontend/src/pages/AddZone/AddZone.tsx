@@ -1,3 +1,4 @@
+// Pagina que se renderiza cuando se quiere agregar una zona
 import axios from "axios";
 import { User, Zone } from "../../shared/Interfaces/Interfaces";
 import { useState, useEffect, useContext } from "react";
@@ -15,8 +16,10 @@ const AddZone = (props: Props) => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const navigate = useNavigate();
 
+  // Redirecciona a la página de usuarios si no se está autenticado
   useRedirectBasedOnAuthentication("authenticated");
 
+  // Obtiene los usuarios de la API de las zonas
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -31,14 +34,17 @@ const AddZone = (props: Props) => {
     fetchUsers();
   }, []);
 
+  // Obtiene un usuario por su id
   function getUser(id: string) {
     const user = users.find((user) => user.id === id);
     return user?.name;
   }
 
+  // Funcion que se ejecuta cuando se hace submit en el formulario
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Si no se selecciona ningún usuario, se crea la zona sin usuarios
     if (selectedUsers.length == 0) {
       await createZone()
         .then(() => {
@@ -48,6 +54,7 @@ const AddZone = (props: Props) => {
           toast.error("Error creating zone");
         });
     } else {
+      // Si se selecciona al menos un usuario, se crea la zona con los usuarios seleccionados
       createUserToZone()
         .then(() => {
           toast.success("Zone created successfully");
@@ -60,10 +67,12 @@ const AddZone = (props: Props) => {
     navigate("/zones");
   };
 
+  // Funcion que crea una zona sin usuarios
   async function createZone() {
     await axios.post(`${import.meta.env.VITE_BASE_URL}/zone`, zone);
   }
 
+  // Funcion que crea una zona con usuarios
   async function createUserToZone() {
     await axios.post(`${import.meta.env.VITE_BASE_URL}/zone/with-users`, {
       zone,
@@ -72,6 +81,7 @@ const AddZone = (props: Props) => {
     });
   }
 
+  // Funcion que se ejecuta cuando se selecciona un usuario en el select de usuarios disponibles para eliminarlo de la lista de usuarios seleccionados
   function handlerDeleteUser(userId: string) {
     setSelectedUsers(selectedUsers.filter((user) => user !== userId));
   }

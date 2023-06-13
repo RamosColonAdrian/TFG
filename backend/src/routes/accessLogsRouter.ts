@@ -1,3 +1,4 @@
+// Ruta para el controlador de los logs de acceso
 import { Router } from "express";
 import { getAccessLogsController } from "../controllers/accessLog/getAccessLogsController";
 

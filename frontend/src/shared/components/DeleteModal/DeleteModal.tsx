@@ -1,3 +1,4 @@
+// Modal para confirmar el borrado de un usuario
 import React from "react";
 import Modal from "react-modal";
 

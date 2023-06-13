@@ -1,3 +1,4 @@
+// Componente que renderiza la barra de navegación de la aplicación 
 import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { authContext } from "../contexts/authContext/authContext";

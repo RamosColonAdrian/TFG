@@ -1,3 +1,4 @@
+// Rutas para el controlador de zonas
 import { Router } from "express";
 import { getZonesController } from "../controllers/zone/getZonesController";
 import { deleteZoneController } from "../controllers/zone/deleteZoneController";

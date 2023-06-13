@@ -1,3 +1,4 @@
+// Pagina que renderiza la lista de usuarios 
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,9 +17,10 @@ const UserList: React.FC = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const { userInfo, logout } = useContext(authContext);
 
-
+  // Redirecciona a la página de usuarios si no se está autenticado
   useRedirectBasedOnAuthentication("authenticated");
 
+  // Obtiene los usuarios de la API de las zonas y los guarda en el estado
   useEffect(() => {
     setIsLoading(true);
     axios
@@ -33,22 +35,27 @@ const UserList: React.FC = () => {
       });
   }, []);
 
+  // Modal para confirmar el borrado de un usuario
   Modal.setAppElement("#root");
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
+  // Funcion que se ejecuta cuando se hace click en el boton de borrar usuario de la tabla
   const handleDeleteUser = () => {
     const deleteUser = async () => {
+      // Si se borra el usuario logueado, se hace logout
       if (userInfo.id === selectedUserId) {
         toast.info("You have deleted yourself. Logging out...");
         logout();        
       }
       try {
+        // Se borra el usuario de la API
         await axios.delete(
           `${import.meta.env.VITE_BASE_URL}/user/${selectedUserId}`
         );
+        // Se borra el usuario del estado
         setLoadedUsers((prevUsers) =>
           prevUsers.filter((user) => user.id !== selectedUserId)
         );
