@@ -12,6 +12,7 @@ const AddDepartment = (props: Props) => {
   const [users, setUsers] = useState<User[]>([]);
   const [department, setDepartment] = useState<Department>(null!);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectedUser, setSelectedUser] = useState("");
   const navigate = useNavigate();
 
   // Redirecciona a la página de usuarios si no se está autenticado
@@ -41,6 +42,9 @@ const AddDepartment = (props: Props) => {
   // Funcion que se ejecuta cuando se hace submit en el formulario 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setSelectedUser("");
+
     try {
       // Se realiza la petición al backend para agregar el departamento
       await axios.post(`${import.meta.env.VITE_BASE_URL}/department`, {
@@ -108,13 +112,17 @@ const AddDepartment = (props: Props) => {
             </label>
             <select
               id="user"
+              value={selectedUser}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
               onChange={(e) => {
                 const selectedUserId = e.target.value;
-                if (!selectedUsers.includes(selectedUserId)) {
-                  setSelectedUsers([...selectedUsers, selectedUserId]);
-                } else {
-                  toast.warning("User already selected");
+                if (selectedUserId !== "") {
+                  if (!selectedUsers.includes(selectedUserId)) {
+                    setSelectedUsers([...selectedUsers, selectedUserId]);
+                    setSelectedUser(""); // Restablecer la opción seleccionada
+                  } else {
+                    toast.warning("User already selected");
+                  }
                 }
               }}
             >
@@ -127,19 +135,24 @@ const AddDepartment = (props: Props) => {
             </select>
           </div>
           <div>
-            {selectedUsers.map((user) => (
-              <div key={user}>
-                <p className="mb-2 text-gray-600">
-                  &emsp;&emsp;- {getUser(user)}{" "}
-                  <span
-                    onClick={() => handlerDeleteUser(user)}
-                    className="text-lg cursor-pointer font-bold"
-                  >
-                    x
-                  </span>{" "}
-                </p>
-              </div>
-            ))}
+            {selectedUsers.map((user) => {
+              if (user !== "") {
+                return (
+                  <div key={user}>
+                    <p className="mb-2 text-gray-600">
+                      &emsp;&emsp;- {getUser(user)}{" "}
+                      <span
+                        onClick={() => handlerDeleteUser(user)}
+                        className="text-lg cursor-pointer font-bold"
+                      >
+                        x
+                      </span>{" "}
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            })}
           </div>
         </div>
         <button

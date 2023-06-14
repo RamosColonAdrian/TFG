@@ -75,14 +75,13 @@ const ZoneDetails = (props: Props) => {
               // Se elimina el usuario de la lista
               zone.UserToZone.splice(index, 1);
               setZone({ ...zone });
-              return true;
             }
-            return false;
           });
         });
     } catch (error) {
       toast.error("User not removed from zone");
     }
+    setIsDeleteModalOpen(false);
   };
 
   // Funcion que realiza el borrado de una zona

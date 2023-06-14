@@ -14,6 +14,7 @@ const AddZone = (props: Props) => {
   const [users, setUsers] = useState<User[]>([]);
   const [zone, setZone] = useState<Zone>(null!);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectedUser, setSelectedUser] = useState("");
   const navigate = useNavigate();
 
   // Redirecciona a la página de usuarios si no se está autenticado
@@ -43,12 +44,17 @@ const AddZone = (props: Props) => {
   // Funcion que se ejecuta cuando se hace submit en el formulario
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSelectedUser("");
+    // Restablecer la opción seleccionada en el desplegable
+    const selectElement = document.getElementById("user") as HTMLSelectElement;
+    selectElement.selectedIndex = 0;
 
     // Si no se selecciona ningún usuario, se crea la zona sin usuarios
-    if (selectedUsers.length == 0) {
+    if (selectedUsers.length === 0) {
       await createZone()
         .then(() => {
-          toast.success("Zone created successfully111");
+          toast.success("Zone created successfully");
+          navigate("/zones");
         })
         .catch((error) => {
           toast.error("Error creating zone");
@@ -58,13 +64,12 @@ const AddZone = (props: Props) => {
       createUserToZone()
         .then(() => {
           toast.success("Zone created successfully");
+          navigate("/zones");
         })
         .catch((error) => {
           toast.error("Error creating zone");
         });
     }
-
-    navigate("/zones");
   };
 
   // Funcion que crea una zona sin usuarios
@@ -147,12 +152,16 @@ const AddZone = (props: Props) => {
             <select
               id="user"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+              value={selectedUser}
               onChange={(e) => {
                 const selectedUserId = e.target.value;
-                if (!selectedUsers.includes(selectedUserId)) {
-                  setSelectedUsers([...selectedUsers, selectedUserId]);
-                } else {
-                  toast.warning("User already selected");
+                if (selectedUserId !== "") {
+                  if (!selectedUsers.includes(selectedUserId)) {
+                    setSelectedUsers([...selectedUsers, selectedUserId]);
+                    setSelectedUser(""); // Restablecer la opción seleccionada
+                  } else {
+                    toast.warning("User already selected");
+                  }
                 }
               }}
             >
@@ -165,19 +174,24 @@ const AddZone = (props: Props) => {
             </select>
           </div>
           <div>
-            {selectedUsers.map((user) => (
-              <div key={user}>
-                <p className="mb-2 text-gray-600">
-                  &emsp;&emsp;- {getUser(user)}{" "}
-                  <span
-                    onClick={() => handlerDeleteUser(user)}
-                    className="text-lg cursor-pointer font-bold"
-                  >
-                    x
-                  </span>{" "}
-                </p>
-              </div>
-            ))}
+            {selectedUsers.map((user) => {
+              if (user !== "") {
+                return (
+                  <div key={user}>
+                    <p className="mb-2 text-gray-600">
+                      &emsp;&emsp;- {getUser(user)}{" "}
+                      <span
+                        onClick={() => handlerDeleteUser(user)}
+                        className="text-lg cursor-pointer font-bold"
+                      >
+                        x
+                      </span>{" "}
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            })}
           </div>
         </div>
         <button

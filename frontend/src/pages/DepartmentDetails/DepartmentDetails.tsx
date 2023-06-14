@@ -65,10 +65,8 @@ const DepartamentDetails = (props: Props) => {
           departmentId: null,
         })
         .then(() => {
-          toast.success("User deleted successfully");
-
           if (!depart) return;
-
+          toast.success("User deleted successfully");
           // Se actualiza el estado del departamento para que se refleje el cambio
           setDepart({
             ...depart,

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { writeFile, utils } from "xlsx";
 import csv from "../../assets/csv.png";
+import DeleteModal from "../../shared/components/DeleteModal/DeleteModal";
 
 const AccessLogList: React.FC = () => {
   const [accessLogs, setAccessLogs] = useState<AccessLog[]>([]);
@@ -15,6 +16,8 @@ const AccessLogList: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   useRedirectBasedOnAuthentication("authenticated");
+
+  
 
   // Funcion para crear un archivo csv con los logs de acceso
   const handleExportToExcel = () => {
@@ -70,7 +73,7 @@ const AccessLogList: React.FC = () => {
 
   useEffect(() => {
     fetchAccessLogs();
-  }, [searchTerm, sortBy, sortDirection]); 
+  }, [searchTerm, sortBy, sortDirection]);
 
   // Función para obtener los logs de acceso de la API 
   const fetchAccessLogs = async () => {
@@ -80,14 +83,24 @@ const AccessLogList: React.FC = () => {
         {
           params: {
             username: searchTerm,
-            sortBy: sortBy || undefined, 
-            sortDirection: sortDirection || undefined, 
+            sortBy: sortBy || undefined,
+            sortDirection: sortDirection || undefined,
           },
         }
       );
       setAccessLogs(response.data);
     } catch (error) {
       toast.error("Error fetching access logs");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_BASE_URL}/access-logs`);
+      setAccessLogs([]);
+      toast.success("Access logs deleted successfully");
+    } catch (error) {
+      toast.error("Error deleting access logs");
     }
   };
 
@@ -201,19 +214,22 @@ const AccessLogList: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <div className="flex justify-end">
-          <button className="mb-10 group rounded-xl h-11 w-28 bg-green-700 font-bold text-base text-white relative overflow-hidden" onClick={handleExportToExcel}>
+        <div className="flex justify-between">
+          <button onClick={handleDelete} className="group rounded h-9 w-36 bg-red-600  font-bold text-base text-white relative overflow-hidden">
+            Delete all logs!
+            <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded"></div>
+          </button>
+          <button className="mb-10 group rounded h-11 w-28 bg-green-700 font-bold text-base text-white relative overflow-hidden" onClick={handleExportToExcel}>
             <div className="flex items-center justify-center gap-3">
               <div className="rounded-full bg-white p-1">
                 <img src={csv} alt="Excel" className="w-5" />
               </div>
               <span>Export</span>
             </div>
-            <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-xl"></div>
-
+            <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded"></div>
           </button>
         </div>
-
+        
       </div>
 
     </div>

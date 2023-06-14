@@ -1,4 +1,3 @@
-// Pagina que renderiza la camara web para reconocer rostros
 import axios, { AxiosError } from "axios";
 import React, { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
@@ -7,7 +6,6 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import clxs from "../../helpers/clxs";
 import { HiOutlineVideoCamera } from "react-icons/hi";
-import { is } from "date-fns/locale";
 
 const VideoPlayer = () => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -15,6 +13,7 @@ const VideoPlayer = () => {
   const webcamRef = useRef<Webcam>(null);
   const [isCapturing, setIsCapturing] = useState<Boolean>(false);
   const { zoneId } = useParams();
+  const captureDelay = 500; // 5 segundos
 
   // Obtiene los dispositivos de video disponibles
   useEffect(() => {
@@ -34,23 +33,22 @@ const VideoPlayer = () => {
 
   // Efecto que se ejecuta cuando se cambia el estado de captura de video
   useEffect(() => {
-    let captureInterval: NodeJS.Timeout | null = null;
-    // Si se está capturando, se ejecuta un intervalo que hace una peticion a la API cada 500ms
-    if (isCapturing ) {
-      captureInterval = setInterval(async () => { 
-        // Se obtiene la imagen de la camara
+    let timeout: NodeJS.Timeout | null = null;
+    let captureAttempts = 0; // Contador de intentos fallidos
+    const maxCaptureAttempts = 10; // Número máximo de intentos fallidos antes de detener la captura
+
+    if (isCapturing) {
+      // Función que realiza la llamada al endpoint
+      const captureFrame = async () => {
         const imageSrc = webcamRef.current?.getScreenshot();
         if (!imageSrc) return;
 
-        // Se convierte la imagen a un archivo
         const imageFile = dataURLtoFile(imageSrc, "image.png");
         const formData = new FormData();
-        // Se añade el archivo y el id de la zona a la peticion
         formData.append("img", imageFile);
         formData.append("zoneId", zoneId as string);
 
         try {
-          // Se hace la peticion a la API para reconocer el rostro
           const { data } = await axios.post(
             `${import.meta.env.VITE_BASE_URL}/recognizer`,
             formData,
@@ -60,55 +58,45 @@ const VideoPlayer = () => {
               },
             }
           );
-          // Si el usuario es reconocido, se muestra un mensaje de bienvenida
+
           if (data.message !== "Desconocido") {
             setIsCapturing(false);
             toast.success(`Welcome ${data.message}`);
-            
+            clearTimeout(timeout!); // Cancelar el temporizador si se reconoce a alguien
+          } else {
+            captureAttempts++; // Incrementar el contador de intentos fallidos
+            if (captureAttempts >= maxCaptureAttempts) {
+              setIsCapturing(false);
+              toast.warning("Unknown User");
+              clearTimeout(timeout!); // Cancelar el temporizador si se alcanza el número máximo de intentos fallidos
+            } else {
+              // Continuar la captura después de un breve retardo
+              timeout = setTimeout(captureFrame, captureDelay);
+            }
           }
         } catch (error) {
-          // Si ocurre un error, se muestra un mensaje de error
           setIsCapturing(false);
           if ((error as AxiosError).response?.status === 401) {
             toast.warning("Not authorized");
-            return;
           } else {
             toast.error("Unknown error");
-            return;
           }
         }
-      }, 500);
-    } 
+      };
+
+      // Iniciar la captura después del tiempo de retardo
+      timeout = setTimeout(captureFrame, captureDelay);
+    } else {
+      // Cancelar el temporizador si se detiene la captura
+      clearTimeout(timeout!);
+    }
 
     // Cleanup function que se ejecuta cuando se desmonta el componente
     return () => {
-      if (captureInterval) clearInterval(captureInterval);
+      clearTimeout(timeout!); // Cancelar el temporizador si se desmonta el componente
     };
   }, [isCapturing]);
 
-  // Efecto que se ejecuta cuando se cambia el estado de captura de video
-  useEffect(() => {
-    let timeOut: NodeJS.Timeout;
-
-    // Si se está capturando, se ejecuta un timeout de 5 segundos
-    if (!isCapturing) return;
-    (async () => {
-      // Si el usuario no es reconocido en 5 segundos, se muestra un mensaje de error
-      await new Promise((res) => {
-        timeOut = setTimeout(() => {
-          setIsCapturing(false);
-          toast.warning("User not recognized");
-          res(1);
-        }, 5000);
-      });
-    })();
-
-    return () => {
-      if (timeOut) clearTimeout(timeOut);
-    };
-  }, [isCapturing]);
-
-  
   // Funcion que se ejecuta cuando se cambia el dispositivo de video
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDeviceId(event.target.value);
@@ -145,32 +133,27 @@ const VideoPlayer = () => {
       />
       <button
         className={clxs("flex justify-center items-center gap-3 fixed top-10 right-10 border-2 font-medium p-4 rounded-full",
-        isCapturing
-          ? "bg-red-200 text-red-600 border-red-500"
-        : "bg-gray-200 border-gray-400 text-gray-600 font-medium"
+          isCapturing
+            ? "bg-red-200 text-red-600 border-red-500"
+            : "bg-gray-200 border-gray-400 text-gray-600 font-medium"
         )}
         onClick={onCapture}
       >
-        
-        
-        {isCapturing 
+        {isCapturing
           ? <div className="flex justify-center items-center gap-3">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-              </span>
-              <p>Recording...</p>
-            </div>
-          : <div className="flex justify-center items-center gap-3">
-              <span className="relative flex h-3 w-3">
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-              </span>
-              <p>Record</p>
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            <p>Recording...</p>
           </div>
-
+          : <div className="flex justify-center items-center gap-3">
+            <span className="relative flex h-3 w-3">
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            <p>Record</p>
+          </div>
         }
-
-        
       </button>
     </div>
   );
